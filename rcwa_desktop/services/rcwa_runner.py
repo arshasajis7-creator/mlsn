@@ -129,18 +129,39 @@ def _prepare_config_for_adapter(config: Configuration, repo_root: Path) -> Confi
         config.layer_bottom, material_csv=resolve_path(config.layer_bottom.material_csv)
     )
 
-    mask_holes = []
+    mask_holes: list[MaskHole] = []
+    hole_index_by_position: dict[tuple[float, float], int] = {}
+
+    def quantise(value: float) -> float:
+        """Round coordinates to avoid floating-point mismatch when deduplicating."""
+
+        return round(value, 9)
+
     for hole in config.mask.holes:
-        diameter = hole.adapter_diameter()
-        mask_holes.append(
-            MaskHole(
-                shape="circle",
-                x_m=hole.x_m,
-                y_m=hole.y_m,
-                size1=diameter,
-                size2=None,
-            )
+        diameter = max(hole.adapter_diameter(), 0.0)
+        if diameter <= 0.0:
+            # Skip zero-area holes; the adapter treats them as invalid.
+            continue
+
+        key = (quantise(hole.x_m), quantise(hole.y_m))
+        replacement = MaskHole(
+            shape="circle",
+            x_m=hole.x_m,
+            y_m=hole.y_m,
+            size1=diameter,
+            size2=None,
         )
+
+        existing_index = hole_index_by_position.get(key)
+        if existing_index is None:
+            hole_index_by_position[key] = len(mask_holes)
+            mask_holes.append(replacement)
+            continue
+
+        # If multiple holes share a centre, keep the largest diameter to avoid
+        # nested discs that destabilise the adapter's power calculations.
+        if diameter > mask_holes[existing_index].size1:
+            mask_holes[existing_index] = replacement
 
     mask = replace(
         config.mask,
