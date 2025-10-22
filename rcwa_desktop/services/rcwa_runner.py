@@ -72,6 +72,12 @@ def run_simulation(
             f"STDOUT:\n{stdout}\nSTDERR:\n{stderr}"
         )
 
+    if log_dir is not None:
+        log_dir.mkdir(parents=True, exist_ok=True)
+        (log_dir / "adapter_stdout.txt").write_text(stdout, encoding="utf-8")
+        (log_dir / "adapter_stderr.txt").write_text(stderr, encoding="utf-8")
+        save_configuration(config, log_dir / "config.json")
+
     # Expect results in rcwa_adaptor directory
     output_csv = working_dir / f"{config.output_prefix}_step1_results.csv"
     if not output_csv.exists():
