@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import csv
+import re
 import subprocess
 import tempfile
-from dataclasses import dataclass, replace
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import List, Tuple
 
@@ -20,6 +21,7 @@ class SimulationResult:
     stderr: str
     freq_GHz: List[float]
     RL_dB: List[float]
+    warnings: List[str] = field(default_factory=list)
 
 
 def run_simulation(
@@ -60,6 +62,8 @@ def run_simulation(
         stdout = completed.stdout
         stderr = completed.stderr
 
+    warnings = _extract_adapter_warnings(stderr)
+
     if log_dir is not None:
         log_dir.mkdir(parents=True, exist_ok=True)
         (log_dir / "adapter_stdout.txt").write_text(stdout, encoding="utf-8")
@@ -71,12 +75,6 @@ def run_simulation(
             f"Simulation failed with exit code {completed.returncode}\n"
             f"STDOUT:\n{stdout}\nSTDERR:\n{stderr}"
         )
-
-    if log_dir is not None:
-        log_dir.mkdir(parents=True, exist_ok=True)
-        (log_dir / "adapter_stdout.txt").write_text(stdout, encoding="utf-8")
-        (log_dir / "adapter_stderr.txt").write_text(stderr, encoding="utf-8")
-        save_configuration(config, log_dir / "config.json")
 
     # Expect results in rcwa_adaptor directory
     output_csv = working_dir / f"{config.output_prefix}_step1_results.csv"
@@ -96,6 +94,7 @@ def run_simulation(
         stderr=stderr,
         freq_GHz=freq,
         RL_dB=rl,
+        warnings=warnings,
     )
 
 
@@ -177,3 +176,42 @@ def _prepare_config_for_adapter(config: Configuration, repo_root: Path) -> Confi
     )
 
     return replace(config, layer_top=layer_top, layer_bottom=layer_bottom, mask=mask)
+
+
+def _extract_adapter_warnings(stderr: str) -> List[str]:
+    """Return structured warnings emitted by the adapter."""
+
+    warnings: List[str] = []
+
+    negative_power_pattern = re.compile(
+        r"Negative power component detected \(([-+0-9.eE]+)\).*Tolerance is ([0-9.eE+-]+)",
+        re.IGNORECASE,
+    )
+    energy_violation_pattern = re.compile(
+        r"Energy conservation violated by ([0-9.eE+-]+).*tolerance ([0-9.eE+-]+)",
+        re.IGNORECASE,
+    )
+
+    for raw_line in stderr.splitlines():
+        line = raw_line.strip()
+        if not line:
+            continue
+
+        match = negative_power_pattern.search(line)
+        if match:
+            value, tolerance = match.groups()
+            warnings.append(
+                "Negative power component detected ("
+                f"{value}) which exceeds the adapter tolerance of {tolerance}."
+            )
+            continue
+
+        match = energy_violation_pattern.search(line)
+        if match:
+            delta, tolerance = match.groups()
+            warnings.append(
+                "Energy conservation violated by "
+                f"{delta} which is above the configured tolerance of {tolerance}."
+            )
+
+    return warnings

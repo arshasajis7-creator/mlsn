@@ -518,7 +518,10 @@ class MainWindow(QMainWindow):
 
     def _handle_simulation_result(self, result: rcwa_runner.SimulationResult, run_context: RunContext) -> None:
         self._append_log("شبیه‌سازی با موفقیت پایان یافت.")
-        self.status_bar.showMessage("شبیه‌سازی کامل شد.", 5000)
+        if result.warnings:
+            self.status_bar.showMessage("شبیه‌سازی کامل شد (با هشدار).", 7000)
+        else:
+            self.status_bar.showMessage("شبیه‌سازی کامل شد.", 5000)
 
         self._update_plot(result.freq_GHz, result.RL_dB)
 
@@ -532,6 +535,16 @@ class MainWindow(QMainWindow):
         ])
         self.log_output.appendPlainText(log_section)
         run_context.append_gui(log_section)
+
+        if result.warnings:
+            warning_block = "\n".join(["--- WARNINGS ---", *result.warnings])
+            self.log_output.appendPlainText(warning_block)
+            run_context.append_gui(warning_block)
+            QMessageBox.warning(
+                self,
+                "Simulation warnings",
+                "\n".join(result.warnings),
+            )
 
     def _handle_simulation_error(self, error: str, run_context: RunContext) -> None:
         self._append_log("شبیه‌سازی با خطا مواجه شد.")
