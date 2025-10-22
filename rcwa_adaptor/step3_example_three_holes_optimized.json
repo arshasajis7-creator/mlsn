@@ -1,0 +1,27 @@
+{
+  "schema_version": "step3-1.0",
+  "freq_GHz": {"start": 1.0, "stop": 18.0, "points": 21},
+  "cell": {"Lx_m": 0.03, "Ly_m": 0.03},
+  "layers": {
+    "L1": {"csv": "../m1.csv", "thickness_m": 0.0045},
+    "L2_mask": {
+      "csv_solid": "../m2.csv",
+      "csv_hole": "../mhole.csv",
+      "thickness_m": 0.0015,
+      "grid": {"Nx": 56, "Ny": 56},
+      "holes": [
+        {"x_m": -0.006, "y_m": 0.006, "diameter_m": 0.0025},
+        {"x_m": 0.006, "y_m": 0.006, "diameter_m": 0.0030},
+        {"x_m": 0.0, "y_m": -0.007, "diameter_m": 0.0020}
+      ]
+    },
+    "L3": {"csv": "../m3.csv", "thickness_m": 0.010}
+  },
+  "polarization": "TE",
+  "n_harmonics": [13, 13],
+  "backing": {"type": "metal", "eps_imag_clamp": 1e8},
+  "angles": {"theta_deg": 0.0, "phi_deg": 0.0},
+  "solver": {"check_convergence": false, "atol": 1e-3, "rtol": 1e-2, "max_iters": 30},
+  "tolerances": {"energy": 2.0, "nonnegativity": 1e-3, "strict": false},
+  "output_prefix": "step3_three_holes_opt"
+}

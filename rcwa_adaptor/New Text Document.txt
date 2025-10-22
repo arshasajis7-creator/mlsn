@@ -1,0 +1,27 @@
+# rcwa/__init__.py
+
+# اگر مسیر دیتابیس یا متغیرهای پکیج داری، اینجا ست کن (اختیاری)
+# import os
+# nk_dir = os.path.join(os.path.dirname(__file__), "nk")
+
+# فقط نمادهای high-level را اکسپورت کن تا circular رخ ندهد
+from .material import Material
+from .layer import Layer, LayerStack
+from .source import Source
+from .solver import Solver
+from .crystal import Crystal
+# اگر کلاس Results داری:
+try:
+    from .results import Results
+except Exception:
+    Results = None  # اختیاری: اگر نبود، مشکلی پیش نیاید
+
+__all__ = [
+    "Material",
+    "Layer", "LayerStack",
+    "Source",
+    "Solver",
+    "Crystal",
+    "Results",
+    # "nk_dir",  # اگر خواستی اکسپورت شود
+]

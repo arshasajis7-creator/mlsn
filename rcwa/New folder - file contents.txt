@@ -1,0 +1,2317 @@
+﻿"""
+Folder PATH listing
+Volume serial number is 000000ED 622E:FC7F
+C:\USERS\1101\DOWNLOADS\MLS_PATCHED_M1\RCWA\NEW FOLDER
+    conftest.py
+    crystal.py
+    grating.py
+    harmonics.py
+    layer.py
+    material.py
+    matrices.py
+    merge_contents.ps1
+    results.py
+    run_merge.bat
+    shorthand.py
+    slicer.py
+    solver.py
+    source.py
+    testing.py
+    __init__.py
+    
+No subfolders exist 
+"""
+
+% the start of the next file,
+%Address and name of the file from root folder: __init__.py | version: n/a | size: 790 bytes | modified date and time: 2025-10-08 10:48:46
+__version__ = '0.0.1'
+__author__ = 'Jordan Edmunds'
+__email__ = 'edmundsj@uci.edu'
+import os
+
+file_location = os.path.dirname(__file__)
+nk_dir = os.path.join(file_location, 'nkData/')
+test_dir = os.path.join(file_location, 'test')
+example_dir = os.path.join(file_location, 'examples')
+
+from rcwa import utils
+from rcwa.material import Material
+from rcwa.crystal import Crystal
+from rcwa.matrices import MatrixCalculator
+from rcwa.layer import LayerStack, Layer, freeSpaceLayer
+from rcwa.source import Source, zeroSource
+from rcwa.results import Results
+from rcwa.slicer import Slicer
+from rcwa.grating import RectangularGrating, TriangularGrating, Grating
+from rcwa.solver import Solver
+from rcwa.utils import Plotter
+from rcwa.shorthand import complexArray
+from rcwa.utils import rTE, rTM
+
+% The end of previous file
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+% the start of the next file,
+%Address and name of the file from root folder: conftest.py | version: n/a | size: 11 bytes | modified date and time: 2025-10-08 10:48:46
+import sys
+
+% The end of previous file
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+% the start of the next file,
+%Address and name of the file from root folder: crystal.py | version: n/a | size: 5963 bytes | modified date and time: 2025-10-08 10:48:46
+from rcwa.shorthand import complexArray
+import numpy as np
+from numpy.typing import ArrayLike
+from typing import Union
+
+
+class Crystal:
+    """
+    Class used for defining periodic structures in x and y
+
+    :param er: 2D numpy array of permittivity values
+    :param ur: 2D numpy array of permeability values
+    :param lattice_vectors: Real-space lattice vectors
+    """
+    def __init__(self, *lattice_vectors,
+                 er: Union[ArrayLike, float] = 1,
+                 ur: Union[ArrayLike, float] = 1):
+        self.permeabilityCellData = ur
+        self.permittivityCellData = er
+
+        self.dimensions = len(lattice_vectors)
+        raw_lattice_vectors = np.array(lattice_vectors)
+        self.lattice_vectors = []
+
+        if len(raw_lattice_vectors[0]) < self.dimensions:
+            raise ValueError('Lattice vector does not have enough dimensions. Needs at least {self.dimensions}')
+        if self.dimensions > 3:
+            raise ValueError('Crystal number of dimensions too high ({self.dimensions}). Can only implement up to 3D.')
+
+        if self.dimensions == 1:
+            self.lattice_vectors.append(raw_lattice_vectors[0, 0:2])
+
+        if self.dimensions == 2:
+            self.lattice_vectors.append(raw_lattice_vectors[0, 0:2])
+            self.lattice_vectors.append(raw_lattice_vectors[1, 0:2])
+
+        if self.dimensions == 3:
+            self.lattice_vectors.append(raw_lattice_vectors[0])
+            self.lattice_vectors.append(raw_lattice_vectors[1])
+            self.lattice_vectors.append(raw_lattice_vectors[2])
+
+        if self.dimensions > 0:
+            self.reciprocal_lattice_vectors = self.calculateReciprocalLatticeVectors()
+            self.crystalType = self._crystal_type()
+            self.latticeConstant = np.linalg.norm(self.lattice_vectors[0]) # TODO: Make this more general
+
+    def calculateReciprocalLatticeVectors(self) -> ArrayLike:
+        if self.dimensions == 1:
+            return self._reciprocal_lattice_vectors_1d()
+        elif self.dimensions == 2:
+            return self._reciprocal_lattice_vectors_2d()
+        elif self.dimensions == 3:
+            return self._reciprocal_lattice_vectors_3d()
+
+    def _reciprocal_lattice_vectors_1d(self) -> ArrayLike:
+        t1 = self.lattice_vectors[0]
+        t1_direction = t1 / np.linalg.norm(t1)
+
+        T1 = 2 * np.pi/ np.linalg.norm(t1) * t1_direction
+        return (T1,)
+
+    def _reciprocal_lattice_vectors_2d(self) -> ArrayLike:
+        rotationMatirx90Degrees = complexArray([
+            [0, -1],
+            [1, 0]])
+        t1 = self.lattice_vectors[0]
+        t2 = self.lattice_vectors[1]
+
+        T1 = 2 * np.pi * rotationMatirx90Degrees @ t2 / np.dot(t1, rotationMatirx90Degrees @ t2)
+        T2 = 2 * np.pi * rotationMatirx90Degrees @ t1 / np.dot(t2, rotationMatirx90Degrees @ t1)
+        return (T1, T2)
+
+    def _reciprocal_lattice_vectors_3d(self) -> ArrayLike:
+        t1 = self.lattice_vectors[0]
+        t2 = self.lattice_vectors[1]
+        t3 = self.lattice_vectors[2]
+        T1 = 2 * np.pi * np.cross(t2, t3) / np.dot(t1, np.cross(t2, t3))
+        T2 = 2 * np.pi * np.cross(t3, t1) / np.dot(t2, np.cross(t3, t1))
+        T3 = 2 * np.pi * np.cross(t1, t2) / np.dot(t3, np.cross(t1, t2))
+
+        return (T1, T2, T3)
+
+    def _crystal_type(self) -> str:
+        if self.dimensions == 1:
+            crystalType = 'SQUARE'
+        elif self.dimensions == 2:
+            crystalType = self._crystal_type_2d()
+        elif self.dimensions == 3:
+            crystalType = self._crystal_type_3d()
+
+        return crystalType
+
+    def _crystal_type_2d(self) -> str:
+        epsilon = 0.00001
+        sideLengthDifference = abs(np.linalg.norm(self.reciprocal_lattice_vectors[0]) -
+                                   np.linalg.norm(self.reciprocal_lattice_vectors[1]))
+        latticeVectorProjection = abs(np.dot(self.reciprocal_lattice_vectors[0], self.reciprocal_lattice_vectors[1]))
+
+        if sideLengthDifference < epsilon and latticeVectorProjection < epsilon:
+            return "SQUARE"
+        elif sideLengthDifference > epsilon and latticeVectorProjection < epsilon:
+            return "RECTANGULAR"
+        elif latticeVectorProjection > epsilon:
+            return "OBLIQUE"
+        else:
+            raise NotImplementedError
+
+    def _crystal_type_3d(self) -> str:
+        epsilon = 0.00001
+        difference_1 =  abs(np.linalg.norm(self.reciprocal_lattice_vectors[0]) - np.linalg.norm(self.reciprocal_lattice_vectors[1]))
+        difference_2 = abs(np.linalg.norm(self.reciprocal_lattice_vectors[0]) - np.linalg.norm(self.reciprocal_lattice_vectors[2]))
+        max_difference = max(difference_1, difference_2)
+
+        proj_01 = abs(np.dot(self.reciprocal_lattice_vectors[0], self.reciprocal_lattice_vectors[1]))
+        proj_02 = abs(np.dot(self.reciprocal_lattice_vectors[0], self.reciprocal_lattice_vectors[2]))
+        proj_03 = abs(np.dot(self.reciprocal_lattice_vectors[1], self.reciprocal_lattice_vectors[2]))
+        max_proj = max(proj_01, proj_02, proj_03)
+
+        if max_difference < epsilon and max_proj < epsilon:
+            return "SQUARE"
+        elif max_difference > epsilon and max_proj < epsilon:
+            return "RECTANGULAR"
+        elif max_proj > epsilon:
+            return "OBLIQUE"
+        else:
+            raise NotImplementedError
+
+"""
+    def _key_symmetry_points_2d(self):
+        keySymmetryPoints = []
+        keySymmetryNames = []
+        T1 = self.reciprocal_lattice_vectors[0]
+        T2 = self.reciprocal_lattice_vectors[1]
+
+        if self.crystalType == "SQUARE":
+            keySymmetryNames = ["X", "G", "M"]
+            keySymmetryPoints = [0.5 * T1, 0 * T1, 0.5 * (T1 + T2)]
+        elif self.crystalType == "RECTANGULAR":
+            keySymmetryNames = ["X", "G", "Y", "S"]
+            keySymmetryPoints = [0.5 * T1, 0 * T1, 0.5 * T2, 0.5 * (T1 + T2)]
+        else:
+            raise NotImplementedError
+
+        return (keySymmetryPoints, keySymmetryNames)
+"""
+
+% The end of previous file
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+% the start of the next file,
+%Address and name of the file from root folder: grating.py | version: n/a | size: 6885 bytes | modified date and time: 2025-10-08 10:48:46
+from rcwa import Layer, Slicer, Crystal
+import numpy as np
+from typing import Union, Tuple
+from numpy.typing import ArrayLike
+
+
+class Grating(Layer):
+    """
+    Base class that doesn't do much at all.
+    """
+
+    def _set_eun(self, n: float, n_void: float, er: float, er_void: float, ur: float, ur_void: float):
+        if n is not None:
+            self._er = np.square(n)
+            self._er_void = np.square(n_void)
+            self._ur = 1
+            self._ur_void = 1
+            self._n = n
+            self._n_void = n_void
+        else:
+            self._er = er
+            self._er_void = er_void
+            self._ur = ur
+            self._ur_void = ur_void
+            self._n = np.sqrt(er*ur)
+            self._n_void = np.sqrt(er_void*ur_void)
+
+    def set_lv_period(self, period, lattice_vector):
+        if lattice_vector is not None:
+            self.period = np.linalg.norm(lattice_vector)
+            self.lattice_vector = lattice_vector
+        else:
+            self.lattice_vector = np.array([period, 0])
+            self.period = period
+
+
+class TriangularGrating(Grating):
+    """
+    Class for one-dimensional triangular (ramp or blaze) gratings
+
+    :param period: Spatial period of the grating
+    :param thickness: Maximum thickness of grating along z (minimum thickness is zero)
+    :param er: Permittivity of the grating material
+    :param ur: Permeability of the grating material
+    :param n: Refractive index of the grating material. Overrides permittivity/permeability if used.
+    :param er_void: Permittivity of the voids in the grating
+    :param ur_void: Permeability of the voids in the grating
+    :param n_void: Refractive index of the voids in the grating. Overrides permittivity / permeability iif used.
+    :param Nx: Number of points along x to divide the grating into
+    :param Nx: Number of slices along z to divide the grating into
+    :param lattice_vector: Explicit lattice vector for grating. Overrides period.
+    """
+    def __init__(self, period: float = 1, er: float = 2, ur:float =1,
+                 n: Union[None, float] = None, thickness: float = 0.1,
+                 er_void: float = 1, ur_void: float = 1, n_void: float = 1,
+                 Nx: int = 500, Nz: int = 10,
+                 lattice_vector: Union[ArrayLike, None] = None):
+        self.Nx = Nx
+        self.Nz = Nz
+        self.thickness = thickness
+
+        self._set_eun(n=n, n_void=n_void, er=er, er_void=er_void, ur=ur, ur_void=ur_void)
+        self.set_lv_period(period=period, lattice_vector=lattice_vector)
+        super().__init__(thickness=thickness)
+
+    def slice(self) -> ArrayLike:
+        er_slices, ur_slices = self._er_data()
+        crystals = [Crystal(self.lattice_vector, er=er, ur=ur) \
+                    for er, ur in zip(er_slices, ur_slices)]
+        self.layers = [Layer(crystal=crystal, thickness=self.thickness / self.Nz) for crystal in crystals]
+
+        return self.layers
+
+    def _er_data(self) -> Tuple[ArrayLike, ArrayLike]:
+        def triangle_func_er(x, y, z):
+            in_void = z >= self.thickness * x / self.period
+            er = in_void * (self._er_void - self._er) + self._er
+            return er
+
+        def triangle_func_ur(x, y, z):
+            in_void = z >= self.thickness * x / self.period
+            ur = in_void * (self._ur_void - self._ur) + self._ur
+            return ur
+
+        slicer_er = Slicer(
+            func=triangle_func_er, xmin=0, xmax=self.period, ymin=0, ymax=1, zmin=0, zmax=self.thickness,
+            Nx=self.Nx, Ny=1, Nz=self.Nz)
+        slicer_ur = Slicer(
+            func=triangle_func_ur, xmin=0, xmax=self.period, ymin=0, ymax=1, zmin=0, zmax=self.thickness,
+            Nx=self.Nx, Ny=1, Nz=self.Nz)
+
+        er_data = slicer_er.slice()
+        ur_data = slicer_ur.slice()
+
+        er_slices = [er_data[:,0, i] for i in range(er_data.shape[2])]
+        ur_slices = [ur_data[:,0,i] for i in range(ur_data.shape[2])]
+        er_slices.reverse()
+        ur_slices.reverse()
+        return er_slices, ur_slices
+
+
+class RectangularGrating(Grating):
+    """
+    Class used for simple generation of 1D gratings. By default oriented with periodicity along the x-direction.
+
+    :param period: Spatial period of the grating
+    :param thickness: Thickness of the grating along z
+    :param er: Permittivity of the grating material
+    :param ur: Permeability of the grating material
+    :param n: Refractive index of the grating material. Overrides permittivity/permeability if used.
+    :param er_void: Permittivity of the voids in the grating
+    :param ur_void: Permeability of the voids in the grating
+    :param n_void: Refractive index of the voids in the grating. Overrides permittivity / permeability iif used.
+    :param groove_width: Width of the empty spaces (voids) in the grating. Must be smaller than period
+    :param nx: Number of points along x to divide the grating into
+    :param lattice_vector: Explicit lattice vector for grating. Overrides period.
+    """
+    def __init__(self, period: float = 1, er: float = 2, ur: float = 1, n: Union[float, None] = None,
+                 thickness: float = 0.1, er_void: float = 1, ur_void: float = 1, n_void: float = 1,
+                 groove_width: float = 0.5, nx: int = 500, lattice_vector: Union[None, ArrayLike] = None):
+
+        if groove_width > period:
+            raise ValueError(f'Groove width {groove_width} must be larger than period {period}')
+
+        self.thickness = thickness
+        self.nx = nx
+
+        self._set_eun(n=n, n_void=n_void, er=er, er_void=er_void, ur=ur, ur_void=ur_void)
+        self.set_lv_period(period=period, lattice_vector=lattice_vector)
+
+        groove_fraction = groove_width / period
+
+        er_data, ur_data = self._er_data(
+            er=er, ur=ur, n=n, er_void=er_void, ur_void=ur_void, n_void=n_void,
+            Nx=nx, groove_fraction=groove_fraction)
+
+        crystal = Crystal(self.lattice_vector, er=er_data, ur=ur_data)
+        super().__init__(thickness=thickness, crystal=crystal)
+
+    def _er_data(self, er: float = 2, er_void: float = 1, ur: float = 1, ur_void: float = 1,
+                 n: Union[None, float] = None, n_void: float = 1, Nx: int = 500,
+                 groove_fraction: float = 0.5) -> Tuple[ArrayLike, ArrayLike]:
+        if n is not None:
+            er_data = self._er_data_single(np.square(n_void), np.square(n), Nx, groove_fraction)
+            ur_data = np.ones(er_data.shape)
+        else:
+            er_data = self._er_data_single(er_void, er, Nx, groove_fraction)
+            ur_data = self._er_data_single(ur_void, ur, Nx, groove_fraction)
+
+        return er_data, ur_data
+
+    def _er_data_single(self, val1: float, val2: float, Nx: int, switch_fraction: float) -> ArrayLike:
+        positions = np.linspace(1/Nx, 1, Nx)
+        void_positions = positions <= switch_fraction
+        return (val1 - val2) * void_positions + val2
+
+% The end of previous file
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+% the start of the next file,
+%Address and name of the file from root folder: harmonics.py | version: n/a | size: 4866 bytes | modified date and time: 2025-10-08 10:48:46
+from rcwa.shorthand import *
+from typing import Union
+from numpy.typing import ArrayLike
+from rcwa import Crystal, Source
+
+
+def zero_harmonic(n_harmonics: Union[ArrayLike, int]):
+    zeroHarmonicLocations = []
+    for num in n_harmonics:
+        zeroHarmonicLocations.append(math.floor(num / 2))
+
+    return zeroHarmonicLocations
+
+
+def min_harmonic(n_harmonics: Union[ArrayLike, int]):
+    minHarmonics = []
+    if np.isscalar(n_harmonics):
+        minHarmonics = - math.floor(n_harmonics / 2)
+    else:
+        for num in n_harmonics:
+            minHarmonics.append(- math.floor(num / 2))
+
+    return minHarmonics
+
+
+def max_harmonic(n_harmonics: Union[ArrayLike, int]):
+    max_harmonics = []
+    if np.isscalar(n_harmonics):
+        if(n_harmonics % 2 == 0):
+            max_harmonics = math.floor(n_harmonics / 2) - 1
+        else:
+            max_harmonics = math.floor(n_harmonics / 2)
+    else:
+        for num in n_harmonics:
+            if(num % 2 == 0):
+                max_harmonics.append(math.floor(num / 2) - 1)
+            else:
+                max_harmonics.append(math.floor(num / 2))
+
+    return max_harmonics
+
+
+def x_components(*args: ArrayLike) -> Union[ArrayLike, complex]:
+    x = []
+    for a in args:
+        if a.shape == (3,) or a.shape == (2,): # element is a row vector
+            x.append(a[0])
+        elif a.shape == (3, 1) or a.shape == (2, 1): # element is a column vector
+            x.append(a[0, 0])
+
+    if len(x) == 1:
+        x = x[0]
+
+    return x
+
+
+def y_components(*args: ArrayLike) -> Union[ArrayLike, complex]:
+    y = []
+
+    for a in args:
+        if a.shape == (3,) or a.shape == (2,):
+            y.append(a[1])
+        elif a.shape == (3, 1) or a.shape == (2, 1):
+            y.append(a[1, 0])
+
+    if len(y) == 1:
+        y = y[0]
+    return y
+
+
+def kx_matrix(source: Source, crystal: Crystal, n_harmonics: Union[ArrayLike, int]) -> ArrayLike:
+    return _k_matrix(source, crystal, n_harmonics, component='x')
+
+
+def ky_matrix(source: Source, crystal: Crystal, n_harmonics: Union[ArrayLike, int]) -> ArrayLike:
+    return _k_matrix(source, crystal, n_harmonics, component='y')
+
+
+def _k_matrix(source: Source, crystal: Crystal,
+              n_harmonics: Union[ArrayLike, int], component: str) -> ArrayLike:
+    if crystal is not None:
+        if crystal.dimensions == 1:
+            K_matrix = _k_matrix_1D(source, crystal, n_harmonics, component=component)
+        elif crystal.dimensions == 2:
+            K_matrix = _k_matrix_2D(source, crystal, n_harmonics[0:2], component=component)
+        else:
+            raise NotImplementedError
+
+        return K_matrix
+    else:
+        if component == 'x':
+            kIncident_component = x_components(source.k_incident)
+        elif component == 'y':
+            kIncident_component = y_components(source.k_incident)
+        else:
+            raise ValueError(f'Component can only be x or y, not {component}')
+
+        return kIncident_component
+
+
+def _k_matrix_1D(source: Source, crystal: Crystal,
+                 n_harmonics: Union[ArrayLike, int], component: str) -> ArrayLike:
+    matrixSize = np.prod(n_harmonics)
+    matrixShape = (matrixSize, matrixSize)
+    KMatrix = complexZeros(matrixShape)
+    T1 = crystal.reciprocal_lattice_vectors[0]
+
+    if component == 'x':
+        (incidentWaveVectorxy, T1xy) = x_components(source.k_incident, T1)
+    elif component == 'y':
+        (incidentWaveVectorxy, T1xy) = y_components(source.k_incident, T1)
+    else:
+        raise ValueError
+
+    minHarmonicT1 = min_harmonic(n_harmonics)
+    maxHarmonicT1 = max_harmonic(n_harmonics)
+
+    diagonalIndex = 0
+    for desiredHarmonicT1 in range(minHarmonicT1, maxHarmonicT1 + 1):
+
+        KMatrix[diagonalIndex][diagonalIndex] = incidentWaveVectorxy - \
+                desiredHarmonicT1*T1xy
+        diagonalIndex += 1
+
+    return KMatrix
+
+
+def _k_matrix_2D(source, crystal, numberHarmonics, component) -> ArrayLike:
+    matrixSize = np.prod(numberHarmonics)
+    matrixShape = (matrixSize, matrixSize)
+    KMatrix = complexZeros(matrixShape)
+
+    (T1, T2) = np.array(crystal.reciprocal_lattice_vectors) / source.k0
+    if component == 'x':
+        (incidentWaveVectorxy, T1xy, T2xy) = x_components(source.k_incident, T1, T2)
+    elif component == 'y':
+        (incidentWaveVectorxy, T1xy, T2xy) = y_components(source.k_incident, T1, T2)
+    else:
+        raise ValueError
+
+    (minHarmonicT1, minHarmonicT2) = min_harmonic(numberHarmonics)
+    (maxHarmonicT1, maxHarmonicT2) = max_harmonic(numberHarmonics)
+
+    diagonalIndex = 0
+    for desiredHarmonicT2 in range(minHarmonicT2, maxHarmonicT2 + 1):
+        for desiredHarmonicT1 in range(minHarmonicT1, maxHarmonicT1 + 1):
+
+            KMatrix[diagonalIndex][diagonalIndex] = incidentWaveVectorxy - \
+                    desiredHarmonicT1*T1xy - desiredHarmonicT2*T2xy
+            diagonalIndex += 1
+
+    return KMatrix
+
+% The end of previous file
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+% the start of the next file,
+%Address and name of the file from root folder: layer.py | version: n/a | size: 9532 bytes | modified date and time: 2025-10-08 10:48:46
+from rcwa.shorthand import *
+from rcwa import Material, Crystal, MatrixCalculator
+import matplotlib.pyplot as plt
+from typing import Union, List, Tuple
+from numpy.typing import ArrayLike
+from matplotlib.figure import Figure, Axes
+
+# TODO: Convolution matrix generation must be refactored. It's a hot mess and hard to understand.
+
+
+class Layer(MatrixCalculator):
+    """
+    Class for defining a single layer of a layer stack used in a simulation
+
+    :param er: Permittivity of the layer. Overridden by crystal permittivity if specified.
+    :param ur: Permeability of the layer. Overridden by crystal permeability if specified.
+    :param thickness: Thickness of the layer
+    :param n: Refractive index of the layer. Overridden by cristal er/ur if specified.
+    :param material: Material object containing the material's permittivity and permeability as a function of wavelength/angle.
+    :param crystal: Crystal object if the layer is periodic in x and/or y. Overrides er, ur, n, and material
+    """
+    def __init__(self, er: complex = 1.0, ur: complex = 1.0, thickness: complex = 0.0, n: Union[complex, None] = None,
+                 material: Union[None, Material] = None, crystal: Union[None, Crystal] = None):
+        if material is None:
+            self.material = Material(er=er, ur=ur, n=n)
+        else:
+            self.material = material
+
+        self.thickness = thickness
+        self.crystal = crystal
+        self.incident = False  # Whether this is a transmission layer
+        self.transmission = False  # Whether this is an incident layer
+
+        if crystal is None:
+            self.homogenous = True
+        else:
+            self.homogenous = False
+
+
+    # Note: these are all just transparent wrappers for underlying material
+    @property
+    def er(self) -> Union[ArrayLike, complex]:
+        return self.material.er
+
+    @er.setter
+    def er(self, er: complex):
+        self.material.er = er
+
+    @property
+    def ur(self):
+        return self.material.ur
+
+    @ur.setter
+    def ur(self, ur: complex):
+        self.material.ur = ur
+
+    @property
+    def n(self) -> Union[ArrayLike, complex]:
+        return self.material.n
+
+    @n.setter
+    def n(self, n: complex):
+        self.material.n = n
+
+    @property
+    def source(self):
+        return self.material.source
+
+    @source.setter
+    def source(self, source):
+        self.material.source = source
+
+    def set_convolution_matrices(self, n_harmonics: Union[ArrayLike, int]):
+        if self.crystal is not None:
+            self.er = self._convolution_matrix(self.crystal.permittivityCellData, n_harmonics)
+            self.ur = self._convolution_matrix(self.crystal.permeabilityCellData, n_harmonics)
+        else:
+            self.er = self.er * complexIdentity(prod(n_harmonics))
+            self.ur = self.ur * complexIdentity(prod(n_harmonics))
+
+    def _convolution_matrix(self, cellData: ArrayLike, n_harmonics: Union[ArrayLike, int]) -> ArrayLike:
+        dimension = self.crystal.dimensions;
+
+        if isinstance(n_harmonics, int):
+            n_harmonics = (n_harmonics,)
+
+        if dimension == 1:
+            n_harmonics = (n_harmonics + (1, 1))
+        elif dimension == 2:
+            n_harmonics = (n_harmonics + (1,))
+
+        (P, Q, R) = n_harmonics
+
+        convolutionMatrixSize = P*Q*R;
+        convolutionMatrixShape = (convolutionMatrixSize, convolutionMatrixSize);
+        convolutionMatrix = complexZeros(convolutionMatrixShape)
+
+        cellData = reshapeLowDimensionalData(cellData);
+        (Nx, Ny, Nz) = cellData.shape;
+        zeroHarmonicsLocation = np.array([math.floor(Nx/2), math.floor(Ny/2), math.floor(Nz/2)])
+
+        cellFourierRepresentation = fftn(cellData);
+        for rrow in range(R):
+            for qrow in range(Q):
+                for prow in range(P):
+                    row = rrow*Q*P + qrow*P + prow;
+                    for rcol in range(R):
+                        for qcol in range(Q):
+                            for pcol in range(P):
+                                col = rcol*Q*P + qcol*P + pcol;
+                                # Get the desired harmonics relative to the 0th-order harmonic.
+                                desiredHarmonics = np.array([prow - pcol, qrow - qcol, rrow - rcol])
+
+                                # Get those harmonic locations from the zero harmonic location.
+                                desiredHarmonicsLocation = zeroHarmonicsLocation + desiredHarmonics
+
+                                convolutionMatrix[row][col] = \
+                                    cellFourierRepresentation[desiredHarmonicsLocation[0],
+                                    desiredHarmonicsLocation[1], desiredHarmonicsLocation[2]];
+        if convolutionMatrix.shape == (1, 1):
+            convolutionMatrix = convolutionMatrix[0][0]
+        return convolutionMatrix;
+
+    def __eq__(self, other):
+        if not isinstance(other, Layer):
+            return NotImplemented
+
+        return self.er == other.er and self.ur == other.ur and self.thickness == other.thickness \
+               and self.n == other.n and self.crystal == other.crystal
+
+    def __str__(self):
+        return f'Layer with\n\ter: {self.er}\n\tur: {self.ur}\n\tL: {self.thickness}\n\tn: {self.n}\n\tcrystal: {self.crystal}'
+
+
+freeSpaceLayer = Layer(1,1)
+
+
+class LayerStack:
+    """
+    Class that defines overall geometry in terms of a stack of layers
+
+    :param internal_layers: Layer objects, starting with the top-most layer (reflection region) and ending with the top-most region (substrate)
+    :param incident_layer: Semi-infinite layer of incident region. Defaults to free space
+    :param transmission_layer: Semi-infinite layer of transmission region. Defaults to free space
+    """
+    def __init__(self, *internal_layers: Layer,
+                 incident_layer: Layer = Layer(er=1, ur=1), transmission_layer: Layer = Layer(er=1, ur=1)):
+        self.gapLayer = Layer(er=1, ur=1)
+        self.incident_layer = incident_layer
+        self.incident_layer.incident = True
+        self.transmission_layer = transmission_layer
+        self.transmission_layer.transmission = True
+
+        self.internal_layers = list(internal_layers)
+        self._Kx = None
+        self._Ky = None
+
+    def __str__(self):
+        top_string = f'\nReflection Layer:\n\t' + str(self.incident_layer) + \
+                f'\nTransmissionLayer:\n\t' + str(self.transmission_layer) + \
+                f'\nInternal Layer Count: {len(self.internal_layers)}\n'
+        internal_string = ''
+        for layer in self.internal_layers:
+            internal_string += str(layer) + '\n'
+        return top_string + internal_string
+
+    @property
+    def _k_dimension(self) -> int:
+        if isinstance(self.Kx, np.ndarray):
+            return self.Kx.shape[0]
+        else:
+            return 1
+
+    @property
+    def _s_element_dimension(self) -> int:
+        s_dim = self._k_dimension * 2
+        return s_dim
+
+    @property
+    def all_layers(self) -> List[Layer]:
+        return [self.incident_layer, *self.internal_layers, self.transmission_layer]
+
+    @property
+    def Kx(self) -> Union[complex, ArrayLike]:
+        return self._Kx
+
+    @Kx.setter
+    def Kx(self, kx: Union[complex, ArrayLike]):
+        self._Kx = kx
+        self.gapLayer.Kx = kx
+        for layer in self.all_layers:
+            layer.Kx = kx
+
+    @property
+    def Ky(self) -> Union[complex, ArrayLike]:
+        return self._Ky
+
+    @Ky.setter
+    def Ky(self, ky: Union[complex, ArrayLike]):
+        self._Ky = ky
+        self.gapLayer.Ky = ky
+        for layer in self.all_layers:
+            layer.Ky = ky
+
+    @property
+    def source(self):
+        return self._source
+
+    @source.setter
+    def source(self, source):
+        self._source = source
+        self.gapLayer.source = source
+        for layer in self.all_layers:
+            layer.source = self.source
+
+    def set_gap_layer(self):
+        self.gapLayer.thickness = 0
+        if self._k_dimension == 1:
+            self.gapLayer.er = 1 + sq(self.Kx) + sq(self.Ky)
+            self.gapLayer.ur = 1
+            Qg = self.gapLayer.Q_matrix()
+            lambda_gap = self.gapLayer.lambda_matrix()
+
+        else:
+            Kz = self.gapLayer.Kz_gap()
+            Qg = self.gapLayer.Q_matrix()
+            lambda_gap = complexIdentity(self._k_dimension * 2)
+            lambda_gap[:self._k_dimension, :self._k_dimension] = 1j * Kz
+            lambda_gap[self._k_dimension:, self._k_dimension:] = 1j * Kz
+
+        self.Wg = complexIdentity(self._s_element_dimension)
+        self.Vg = Qg @ inv(lambda_gap)
+
+        for layer in self.all_layers:
+            layer.Wg = self.Wg
+            layer.Vg = self.Vg
+
+    # set all convolution matrices for all interior layers
+    def set_convolution_matrices(self, n_harmonics: Union[int, ArrayLike]):
+        for layer in self.internal_layers:
+            layer.set_convolution_matrices(n_harmonics)
+
+    @property
+    def crystal(self) -> Union[None, Crystal]:
+        for i in range(len(self.internal_layers)):
+            if self.internal_layers[i].crystal is not None:
+                return self.internal_layers[i].crystal
+        return None
+
+    def plot(self, fig: Union[None, Figure] = None, ax: Union[None, Axes] = None) -> Tuple[Figure, Axes]:
+        if fig is None and ax is None:
+            fig, ax = plt.subplots()
+        elif fig is not None and ax is None:
+            ax = fig.add_subplot()
+
+        # z = 0 will be defined at the start of the top-most layer.
+
+        return fig, ax
+
+
+
+emptyStack = LayerStack()
+
+% The end of previous file
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+% the start of the next file,
+%Address and name of the file from root folder: material.py | version: n/a | size: 6969 bytes | modified date and time: 2025-10-08 10:48:46
+"""
+I think the way this currently works is too convoluted. It needs to be refactored to be understandable.
+
+"""
+import numpy as np
+import pandas as pd
+import rcwa
+import os
+from rcwa.utils import CSVLoader, RIDatabaseLoader
+import warnings
+from numpy.typing import ArrayLike
+
+
+class Material:
+    """
+    Material class for defining materials permittivity / permeability / refractive index as a function of wavelength / angle.
+
+    :param name: Material name to be looked up in database (i.e. Si)
+    :param er: Complex-valued numerical permittivity value or function of wavelength
+    :param ur: Complex-valued numerical permeability value or function of wavelength
+    :param n: Complex-valued refractive index of material. Overrides er / ur
+    :param source: Excitation source to link to material (mandatory for dispersive materials)
+    :param filename: File containing n/k data for the material in question
+    :param database_path: Raw file path within database
+    """
+    database = RIDatabaseLoader()
+
+    def __init__(self, name=None, er=1, ur=1, n=None, database_path=None, filename=None, source=None):
+        self.name = ''
+        self.source = source
+        self.dispersive = False
+        self.loader = None
+
+        if callable(er) or callable(ur):
+            self.dispersive = True
+            self._er_dispersive = er
+            self._ur_dispersive = ur
+
+        if name is not None or database_path is not None:
+            self.dispersive = True
+            self._load_from_database(name, filename=database_path)
+        elif filename is not None:
+            self.dispersive = True
+            self._load_from_nk_table(filename=filename)
+        elif callable(er) or callable(ur):
+            self.dispersive = True
+            self.dispersion_type = 'formula'
+            if callable(er):
+                self._er_dispersive = er
+            else:
+                self._er_dispersive = lambda x: er
+            if callable(ur):
+                self._ur_dispersive = ur
+            else:
+                self._ur_dispersive = lambda x: ur
+
+        else:
+            self.dispersive = False
+            if n is None: # If the refractive index is not defined, go with the permittivity
+                self._er = er
+                self._ur = ur
+                self._n = np.sqrt(er*ur)
+            else: # If the refractive index is defined, ignore the permittivity and permeability
+                self._n = n
+                self._er = np.square(n)
+                self._ur = 1
+
+    def _set_dispersive_nk(self, data_dict):
+        """
+        Set our internal dispersive refractive index, permittivity, and permeability based on
+        received data dictionary
+        """
+        self._n_dispersive = data_dict['n']
+        self._er_dispersive = data_dict['er']
+        self._ur_dispersive = data_dict['ur']
+        if 'dispersion_type' in data_dict.keys():
+            self.dispersion_type = data_dict['dispersion_type']
+        if 'wavelength' in data_dict.keys():
+            self.wavelengths = data_dict['wavelength']
+
+    def _load_from_nk_table(self, filename: str):
+        self.dispersion_type = 'tabulated'
+        loader = CSVLoader(filename=filename)
+        data_dict = loader.load()
+        self._set_dispersive_nk(data_dict)
+
+    def _load_from_database(self, material_name: str, filename: str = None):
+        """
+        Parses data from a CSV or database YAML file into a set of numpy arrays.
+
+        :param filename: File containing n/k data for material in question
+        """
+
+        if filename is not None:
+            file_to_load = os.path.join(rcwa.nk_dir, 'data', filename)
+
+        if material_name in self.database.materials.keys():
+            file_to_load = os.path.join(rcwa.nk_dir, 'data', self.database.materials[material_name])
+
+        data_dict = self.database.load(file_to_load)
+        self._set_dispersive_nk(data_dict)
+
+    @property
+    def n(self):
+        if not self.dispersive:
+            return self._n
+        else:
+            return self.lookupParameter(self._n_dispersive)
+
+    @n.setter
+    def n(self, n: float):
+        self._er = np.square(n)
+        self._ur = 1
+
+    @property
+    def er(self) -> float:
+        if not self.dispersive:
+            return self._er
+        else:
+            return self.lookupParameter(self._er_dispersive)
+
+    @er.setter
+    def er(self, er: complex):
+        self._er = er
+
+    @property
+    def ur(self) -> complex:
+        if not  self.dispersive:
+            return self._ur
+        else:
+            return self.lookupParameter(self._ur_dispersive)
+
+    @ur.setter
+    def ur(self, ur: complex):
+        self._ur = ur
+
+    def lookupParameter(self, parameter: ArrayLike) -> complex:
+        if self.dispersion_type == 'tabulated':
+            return self.lookupNumeric(parameter)
+        elif self.dispersion_type == 'formula':
+            wavelength = self.source.wavelength
+            return parameter(wavelength)
+
+    def lookupNumeric(self, parameter: ArrayLike) -> complex:
+        """
+        Looks up a numeric value of a parameter
+
+        :param parameter: Either _n_dispersive, _er_dispersive, or _ur_dispersive
+        """
+        wavelength = self.source.wavelength
+        indexOfWavelength = np.searchsorted(self.wavelengths, wavelength)
+        return_value = 0
+
+        if wavelength > self.wavelengths[-1]: # Extrapolate if necessary
+            slope = (parameter[-1] - parameter[-2]) / (self.wavelengths[-1] - self.wavelengths[-2])
+            deltaWavelength = wavelength - self.wavelengths[-1]
+            return_value = parameter[-1] + slope * deltaWavelength
+            warnings.warn(f'Requested wavelength {wavelength} outside available material range {self.wavelengths[0]} - {self.wavelengths[-1]}')
+
+        elif wavelength < self.wavelengths[0]: # Extrapolate the other direction if necessary
+            slope = (parameter[1] - parameter[0]) / (self.wavelengths[1] - self.wavelengths[0])
+            deltaWavelength = self.wavelengths[0] - wavelength
+            return_value = parameter[0] - slope * deltaWavelength
+            warnings.warn(f'Requested wavelength {wavelength} outside available material range {self.wavelengths[0]} - {self.wavelengths[-1]}')
+
+        else: # Our wavelength is in the range over which we have data
+            if wavelength == self.wavelengths[indexOfWavelength]: # We found the EXACT wavelength
+                return_value = parameter[indexOfWavelength]
+            else: # We need to interpolate the wavelength. The indexOfWavelength is pointing to the *next* value
+                slope = (parameter[indexOfWavelength] - parameter[indexOfWavelength-1]) / (self.wavelengths[indexOfWavelength] - self.wavelengths[indexOfWavelength-1]) # wavelength spacing between two points
+                deltaWavelength = wavelength - self.wavelengths[indexOfWavelength]
+                return_value = parameter[indexOfWavelength] + slope * deltaWavelength
+
+        return return_value
+
+% The end of previous file
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+% the start of the next file,
+%Address and name of the file from root folder: matrices.py | version: n/a | size: 15099 bytes | modified date and time: 2025-10-08 10:48:46
+from rcwa.shorthand import *
+from autograd import numpy as np
+from numpy.typing import ArrayLike
+from typing import Union
+
+def s_incident(source, n_harmonics: Union[int, ArrayLike]):
+    totalNumberHarmonics = np.prod(n_harmonics)
+    return np.hstack((source.pX * kroneckerDeltaVector(totalNumberHarmonics),
+            source.pY * kroneckerDeltaVector(totalNumberHarmonics)))
+
+def S_matrix_transparent(matrixShape: ArrayLike):
+    STransparent = complexZeros((2, 2) + matrixShape);
+    STransparent[0,1] = complexIdentity(matrixShape[0]);
+    STransparent[1,0] = complexIdentity(matrixShape[0]);
+    return STransparent;
+
+def redheffer_product(SA: ArrayLike, SB: ArrayLike):
+    D = D_matrix_redheffer(SA, SB)
+    F = F_matrix(SA, SB)
+
+    S11 = SA[0, 0] + D @ SB[0, 0] @ SA[1, 0];
+    S12 = D @ SB[0, 1];
+    S21 = F @ SA[1, 0];
+    S22 = SB[1, 1] + F @ SA[1, 1] @ SB[0, 1];
+
+    S = np.array([[S11, S12], [S21, S22]])
+    return S
+
+def omega_squared_matrix(P: ArrayLike, Q: ArrayLike):
+    return P @ Q
+
+def A_matrix(Wi, Wj, Vi, Vj):
+    return np.linalg.inv(Wi) @ Wj + inv(Vi) @ Vj;
+
+def B_matrix(Wi, Wj, Vi, Vj):
+    return np.linalg.inv(Wi) @ Wj - inv(Vi) @ Vj;
+
+def D_matrix(Ai, Bi, Xi):
+    AiInverse = np.linalg.inv(Ai);
+    return Ai - Xi @ Bi @ AiInverse @ Xi @ Bi;
+
+def D_matrix_redheffer(SA, SB):
+    return SA[0,1] @ np.linalg.inv(complexIdentity(SA[0,0].shape[0]) - SB[0,0] @ SA[1,1])
+
+def F_matrix(SA, SB):
+    return SB[1,0] @ np.linalg.inv(complexIdentity(SA[0,0].shape[0]) - SA[1,1] @ SB[0,0])
+
+
+def calculateInternalSMatrixFromRaw(Ai, Bi, Xi, Di):
+    AiInverse = np.linalg.inv(Ai)
+    DiInverse = np.linalg.inv(Di);
+
+    S11 = DiInverse @ (Xi @ Bi @ AiInverse @ Xi @ Ai - Bi)
+    S12 = DiInverse @ Xi @ (Ai - Bi @ AiInverse @ Bi)
+    S21 = S12
+    S22 = S11
+
+    S = np.array([[S11, S12],[S21, S22]])
+    return S
+
+def calculateReflectionRegionSMatrixFromRaw(AReflectionRegion, BReflectionRegion):
+    A = AReflectionRegion
+    B = BReflectionRegion
+    AInverse = np.linalg.inv(A)
+
+    S11 = - AInverse @ B
+    S12 = 2 * AInverse
+    S21 = 0.5 * (A - B @ AInverse @ B)
+    S22 = B @ AInverse
+    S = np.array([[S11,S12], [S21,S22]])
+    return S
+
+def calculateTransmissionRegionSMatrixFromRaw(ATransmissionRegion, BTransmissionRegion): # UNIT TESTS COMPLETE
+    A = ATransmissionRegion
+    B = BTransmissionRegion
+    AInverse = np.linalg.inv(A)
+
+    S11 = B@ AInverse
+    S12 = 0.5* (A- (B @ AInverse @ B))
+    S21 = 2* AInverse
+    S22 = - AInverse @ B
+    S = np.array([[S11,S12],[S21,S22]])
+    return S
+
+
+# NOTE - this can only be used for 1D (TMM-type) simulations. rTE/rTM are not meaningful quantities otherwise.
+def calculateTEMReflectionCoefficientsFromXYZ(source, rx, ry, rz):
+    if isinstance(rx, np.ndarray):
+        raise NotImplementedError
+    else:
+        rxyz = np.array([rx, ry, rz])
+        rTEM = source.ATEM @ rxyz
+        rTEM[0] = rTEM[0] / source.pTE
+        rTEM[1] = rTEM[1] / source.pTM
+        return rTEM
+
+def calculateReflectionCoefficient(S, Kx, Ky, KzReflectionRegion,
+        WReflectionRegion, source, numberHarmonics):
+
+    incidentFieldHarmonics = s_incident(source, numberHarmonics)
+    rTransverse = WReflectionRegion @ S[0,0] @ np.linalg.inv(WReflectionRegion) @ incidentFieldHarmonics
+
+    rx, ry, rz = None, None, None
+    if isinstance(Kx, np.ndarray):
+        maxIndex = int(rTransverse.shape[0]/2)
+        rx = rTransverse[0:maxIndex]
+        ry = rTransverse[maxIndex:]
+        rz = - np.linalg.inv(KzReflectionRegion) @ (Kx @ rx + Ky @ ry)
+    else:
+        rx = rTransverse[0]
+        ry = rTransverse[1]
+        rz = - (Kx * rx + Ky * ry) / KzReflectionRegion
+    return rx, ry, rz
+
+def calculateTransmissionCoefficient(S, Kx, Ky, KzTransmissionRegion,
+        WTransmissionRegion, source, numberHarmonics):
+    incidentFieldHarmonics = s_incident(source, numberHarmonics)
+    tTransverse = WTransmissionRegion @ S[1,0] @ inv(WTransmissionRegion) @ incidentFieldHarmonics
+
+    tx, ty, tz = None, None, None
+    if isinstance(Kx, np.ndarray):
+        maxIndex = int(tTransverse.shape[0]/2)
+        tx = tTransverse[:maxIndex]
+        ty = tTransverse[maxIndex:]
+        tz = - inv(KzTransmissionRegion) @ (Kx @ tx + Ky @ ty)
+    else:
+        tx = tTransverse[0]
+        ty = tTransverse[1]
+        tz = - (Kx * tx + Ky * ty) / KzTransmissionRegion
+    return tx, ty, tz
+
+def calculateDiffractionReflectionEfficiency(rx, ry, rz, source, KzReflectionRegion, layerStack, numberHarmonics):
+    urReflectionRegion = layerStack.incident_layer.ur
+    preMatrix = real(-1 /urReflectionRegion * KzReflectionRegion) / \
+            real(source.k_incident[2] / urReflectionRegion)
+    R = None
+    if isinstance(KzReflectionRegion, np.ndarray):
+        R = preMatrix @ (sq(np.abs(rx)) + sq(np.abs(ry)) + sq(np.abs(rz)))
+        RDimension = int(sqrt(rx.shape[0]))
+        if not np.isscalar(numberHarmonics):
+            R = R.reshape((RDimension, RDimension))
+    else:
+        R = -preMatrix * (sq(np.abs(rx)) + sq(np.abs(ry)) + sq(np.abs(rz)))
+    return R
+
+def calculateDiffractionTransmissionEfficiency(tx, ty, tz, source, KzTransmissionRegion, layerStack,
+                                              numberHarmonics):
+    urTransmissionRegion = layerStack.transmission_layer.ur
+    urReflectionRegion = layerStack.incident_layer.ur
+    preMatrix = real(1 / urTransmissionRegion * KzTransmissionRegion) / \
+            real(source.k_incident[2] / urReflectionRegion)
+
+    if isinstance(KzTransmissionRegion, np.ndarray):
+        T = preMatrix @ (sq(np.abs(tx)) + sq(np.abs(ty)) + sq(np.abs(tz)))
+        TDimension = int(sqrt(tx.shape[0]))
+        if not np.isscalar(numberHarmonics):
+            T = T.reshape((TDimension, TDimension))
+    else:
+        T = preMatrix * (sq(np.abs(tx)) + sq(np.abs(ty)) + sq(np.abs(tz)))
+    return T
+
+def calculateEz(kx, ky, kz, Ex, Ey):
+    Ez = - (kx*Ex + ky*Ey) / kz
+    return Ez;
+
+def calculateRT(kzReflectionRegion, kzTransmissionRegion,
+        layerStack, ExyzReflected, ExyzTransmitted):
+    urTransmissionRegion = layerStack.transmission_layer.ur
+    urReflectionRegion = layerStack.incident_layer.ur
+    R = sq(norm(ExyzReflected))
+    T = sq(norm(ExyzTransmitted))*np.real(kzTransmissionRegion / urTransmissionRegion) / \
+            (kzReflectionRegion / urReflectionRegion);
+
+    return (R, T);
+
+
+class MatrixCalculator:
+    """
+    Superclass of Layer which is used purely for the calculation of matrices
+    """
+
+    def P_matrix(self):
+        if isinstance(self.Kx, np.ndarray):
+            return self._P_matrix_general()
+        else:
+            return self._P_matrix_homogenous()
+
+    def _P_matrix_homogenous(self):
+        P = complexZeros((2, 2));
+
+        P[0,0] = self.Kx*self.Ky;
+        P[0,1] = self.er*self.ur - np.square(self.Kx);
+        P[1,0] = sq(self.Ky) - self.er*self.ur
+        P[1,1] = - self.Kx*self.Ky;
+        P /= self.er;
+        return P
+
+    def _P_matrix_general(self):
+        erInverse = np.linalg.inv(self.er)
+        KMatrixDimension = self.Kx.shape[0]
+        matrixShape = (2 *KMatrixDimension, 2 * KMatrixDimension)
+        P = complexZeros(matrixShape)
+
+        P[:KMatrixDimension,:KMatrixDimension] = self.Kx @ erInverse @ self.Ky
+        P[:KMatrixDimension,KMatrixDimension:] = self.ur - self.Kx @ erInverse @ self.Kx
+        P[KMatrixDimension:,:KMatrixDimension] = self.Ky @ erInverse @ self.Ky - self.ur
+        P[KMatrixDimension:,KMatrixDimension:] = - self.Ky @ erInverse @ self.Kx
+        return P
+
+    def Q_matrix(self):
+        if isinstance(self.Kx, np.ndarray):
+            if isinstance(self.er, np.ndarray):
+                return self._Q_matrix_general()
+            else:
+                return self._Q_matrix_semi_infinite()
+        else:
+            return self._Q_matrix_homogenous()
+
+    def _Q_matrix_homogenous(self):
+        Q = complexZeros((2,2));
+
+        Q[0,0] = self.Kx * self.Ky;
+        Q[0,1] = self.er*self.ur - sq(self.Kx);
+        Q[1,0] = sq(self.Ky) - self.er*self.ur;
+        Q[1,1] = - self.Kx * self.Ky;
+        Q = Q / self.ur;
+        return Q;
+
+    def _Q_matrix_general(self):
+        urInverse = np.linalg.inv(self.ur)
+        KMatrixDimension = self.Kx.shape[0]
+        matrixShape = (2 *KMatrixDimension, 2 * KMatrixDimension)
+        Q = complexZeros(matrixShape)
+
+        Q[:KMatrixDimension,:KMatrixDimension] = self.Kx @ urInverse @ self.Ky
+        Q[:KMatrixDimension,KMatrixDimension:] = self.er - self.Kx @ urInverse @ self.Kx
+        Q[KMatrixDimension:,:KMatrixDimension] = self.Ky @ urInverse @ self.Ky - self.er
+        Q[KMatrixDimension:,KMatrixDimension:] = - self.Ky @ urInverse @ self.Kx
+        return Q
+
+    def _Q_matrix_semi_infinite(self):
+        KDimension = self.Kx.shape[0]
+        Q = complexZeros((KDimension * 2, KDimension*2))
+        Q[:KDimension, :KDimension] = self.Kx @ self.Ky
+        Q[:KDimension, KDimension:] = self.ur * self.er * complexIdentity(KDimension) - self.Kx @ self.Kx
+        Q[KDimension:, :KDimension] = self.Ky @ self.Ky - self.ur*self.er*complexIdentity(KDimension)
+        Q[KDimension:, KDimension:] = - self.Ky @ self.Kx
+        Q /= self.ur
+        return Q
+
+    def lambda_matrix(self):
+        Kz = self.Kz_forward() # I am a little unsure about this particular line. Why is Kz_backward never used?
+
+        if isinstance(Kz, np.ndarray):
+            KzDimension = Kz.shape[0]
+            LambdaShape = (KzDimension*2, KzDimension*2)
+            Lambda = complexZeros(LambdaShape)
+            Lambda[:KzDimension, :KzDimension] = 1j*Kz
+            Lambda[KzDimension:, KzDimension:] = 1j*Kz
+            return Lambda
+        else:
+            return complexIdentity(2)* (0 + 1j)*Kz;
+
+    def Kz_backward(self):
+        if isinstance(self.Kx, np.ndarray):
+            return -conj(sqrt(conj(self.er*self.ur)*complexIdentity(self.Kx.shape[0]) - self.Kx @ self.Kx - self.Ky @ self.Ky))
+        else:
+            return sqrt(self.er*self.ur - sq(self.Kx) - sq(self.Ky))
+
+    def Kz_forward(self):
+        if isinstance(self.Kx, np.ndarray):
+            return conj(sqrt(conj(self.er*self.ur)*complexIdentity(self.Kx.shape[0]) - self.Kx @ self.Kx - self.Ky @ self.Ky))
+        else:
+            return sqrt(self.er*self.ur - sq(self.Kx) - sq(self.Ky))
+
+    def Kz_gap(self):
+        if isinstance(self.Kx, np.ndarray):
+            return conj(sqrt(complexIdentity(self.Kx.shape[0]) - self.Kx @ self.Kx - self.Ky @ self.Ky))
+        else:
+            return sqrt(self.er*self.ur - sq(self.Kx) - sq(self.Ky))
+
+    def VWLX_matrices(self):
+        if not isinstance(self.Kx, np.ndarray):
+            return self._VWLX_matrices_homogenous()
+        else:
+            return self._VWLX_matrices_general()
+
+    def _VWLX_matrices_homogenous(self):
+        Kz = self.Kz_forward()
+        Q = self.Q_matrix()
+        O = self.lambda_matrix()
+        OInverse = np.linalg.inv(O)
+        W = complexIdentity(2)
+        X = matrixExponentiate(O * self.source.k0 * self.thickness)
+        V = Q @ W @ OInverse
+
+        return (V, W, O, X)
+
+    def _VWLX_matrices_general(self):
+        P = self.P_matrix()
+        Q = self.Q_matrix()
+        OmegaSquared = omega_squared_matrix(P, Q)
+
+        if self.homogenous:
+            Kz = self.Kz_forward()
+            Lambda = self.lambda_matrix()
+            LambdaInverse = np.linalg.inv(Lambda)
+            W = complexIdentity(2 * Kz.shape[0])
+            V = Q @ W @ LambdaInverse
+            X = matrixExponentiate(-Lambda * self.source.k0 * self.thickness)
+            return (V, W, Lambda, X)
+        else:
+            eigenValues, W = eig(OmegaSquared)
+            Lambda = np.diag(sqrt(eigenValues))
+            LambdaInverse = np.diag(np.reciprocal(sqrt(eigenValues)))
+            V = Q @ W @ LambdaInverse
+            X = matrixExponentiate(-Lambda * self.source.k0 * self.thickness)
+            return (V, W, Lambda, X)
+
+    def S_matrix(self):
+        if self.thickness > 0:
+            return self._S_matrix_internal()
+        elif self.thickness == 0:
+
+            if self.incident:
+                return self._S_matrix_reflection()
+            elif self.transmission:
+                return self._S_matrix_transmission()
+            else:
+                raise ValueError('''Semi-infinite film appears to be neither incident or transmissive. 
+                Cannot compute S-matrix''')
+
+    def _S_matrix_internal(self):
+        (Vi, Wi, _, Xi) = self.VWLX_matrices()
+        Ai = A_matrix(Wi, self.Wg, Vi, self.Vg)
+        Bi = B_matrix(Wi, self.Wg, Vi, self.Vg)
+        Di = D_matrix(Ai, Bi, Xi)
+
+        Si = calculateInternalSMatrixFromRaw(Ai, Bi, Xi, Di);
+        return Si;
+
+    def _S_matrix_reflection(self):
+        if isinstance(self.Kx, np.ndarray):
+            return self._S_matrix_reflection_general()
+        else:
+            return self._S_matrix_reflection_homogenous()
+
+    def _S_matrix_reflection_homogenous(self):
+        (Vi, Wi, _, X) = self.VWLX_matrices()
+        Ai = A_matrix(self.Wg, Wi, self.Vg, Vi)
+        Bi = B_matrix(self.Wg, Wi, self.Vg, Vi)
+
+        Si = calculateReflectionRegionSMatrixFromRaw(Ai, Bi)
+        return Si
+
+    def _S_matrix_reflection_general(self):
+        KDimension = self.Kx.shape[0]
+        lambdaRef = complexZeros((KDimension*2, KDimension*2))
+        Wi = complexIdentity(KDimension * 2)
+        Q = self.Q_matrix()
+
+        # I have no idea why we conjugate ur * er and then conjugate the whole thing.
+        Kz = conj(sqrt (conj(self.er * self.ur) * \
+                        complexIdentity(KDimension) - self.Kx @ self.Kx - self.Ky @ self.Ky))
+        lambdaRef[:KDimension, :KDimension] = 1j*Kz
+        lambdaRef[KDimension:, KDimension:] = 1j*Kz
+        Vi = Q @ np.linalg.inv(lambdaRef)
+        Ai = A_matrix(self.Wg, Wi, self.Vg, Vi)
+        Bi = B_matrix(self.Wg, Wi, self.Vg, Vi)
+
+        Sref = calculateReflectionRegionSMatrixFromRaw(Ai, Bi)
+        return Sref
+
+    def _S_matrix_transmission(self):
+        if isinstance(self.Kx, np.ndarray):
+            return self._S_matrix_transmission_general()
+        else:
+            return self._S_matrix_transmission_homogenous()
+
+    def _S_matrix_transmission_homogenous(self):
+        (Vi, Wi, _, X) = self.VWLX_matrices()
+        Ai = A_matrix(self.Wg, Wi, self.Vg, Vi);
+        Bi = B_matrix(self.Wg, Wi, self.Vg, Vi);
+
+        Si = calculateTransmissionRegionSMatrixFromRaw(Ai, Bi);
+        return Si;
+
+    def _S_matrix_transmission_general(self):
+        KDimension = self.Kx.shape[0]
+        lambdaRef = complexZeros((KDimension*2, KDimension*2))
+        Wi = complexIdentity(KDimension * 2)
+        Q = self.Q_matrix()
+
+        # I have no idea why we conjugate ur * er and then conjugate the whole thing.
+        Kz = conj(sqrt (conj(self.er * self.ur) * complexIdentity(KDimension) - self.Kx @ self.Kx - self.Ky @ self.Ky))
+        lambdaRef[:KDimension, :KDimension] = 1j*Kz
+        lambdaRef[KDimension:,KDimension:] = 1j*Kz
+        Vi = Q @ np.linalg.inv(lambdaRef)
+        Ai = A_matrix(self.Wg, Wi, self.Vg, Vi)
+        Bi = B_matrix(self.Wg, Wi, self.Vg, Vi)
+
+        Strn = calculateTransmissionRegionSMatrixFromRaw(Ai, Bi)
+        return Strn
+
+% The end of previous file
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+% the start of the next file,
+%Address and name of the file from root folder: merge_contents.ps1 | version: n/a | size: 4743 bytes | modified date and time: 2025-09-17 17:25:20
+# merge_contents.ps1
+# Save this file in the root folder and run run_merge.bat (provided separately).
+# This script:
+#  - creates a tree map of the folder (as a Python triple-quote block)
+#  - appends contents of script-like files (txt,json,py,md,...)
+#  - writes separators/metadata in the format you requested
+#  - saves the merged file as "<rootfolder> - file contents.txt" (UTF8)
+
+# Ensure script stops on errors
+$ErrorActionPreference = 'Stop'
+
+# Root and output paths
+$Root = (Get-Location).ProviderPath
+$RootName = Split-Path -Leaf $Root
+$OutFile = Join-Path $Root ("$RootName - file contents.txt")
+
+# If output exists, remove it first
+if (Test-Path $OutFile) {
+    Remove-Item -Force $OutFile
+}
+
+# 1) Build tree map (use built-in tree.exe for Windows consoles)
+try {
+    $treeText = & tree /F $Root 2>&1 | Out-String
+} catch {
+    # fallback: simple recursive listing if tree.exe unavailable
+    function Get-Tree {
+        param($Path, $Prefix = "")
+        Get-ChildItem -LiteralPath $Path -Force | ForEach-Object {
+            if ($_.PSIsContainer) {
+                "$Prefix+ $_"
+                Get-Tree -Path $_.FullName -Prefix ("$Prefix    ")
+            } else {
+                "$Prefix- $_"
+            }
+        }
+    }
+    $treeText = Get-Tree -Path $Root | Out-String
+}
+
+# Write Python triple-quote comment block with the tree inside (UTF8)
+$headerBlock = @()
+$headerBlock += '"""'
+$headerBlock += $treeText.TrimEnd("`r","`n")
+$headerBlock += '"""'
+$headerBlock += ''  # blank line
+
+$headerBlock | Out-File -FilePath $OutFile -Encoding UTF8
+
+# 2) Append contents of relevant files
+$exts = @('.txt','.json','.py','.md','.yml','.yaml','.ini','.cfg','.csv','.tsv','.bat','.ps1','.sh','.toml','.xml','.html','.css','.js')
+$allFiles = Get-ChildItem -Path $Root -Recurse -File -Force | Where-Object { $exts -contains ($_.Extension.ToLower()) } | Sort-Object FullName
+
+$first = $true
+
+foreach ($f in $allFiles) {
+    # Skip the merged output itself if it matches an extension filter
+    if ($f.FullName -ieq $OutFile) { continue }
+
+    # Relative path from root
+    $rel = $f.FullName.Substring($Root.Length).TrimStart('\','/')
+
+    # Metadata
+    $size = $f.Length
+    $mtime = $f.LastWriteTime.ToString('yyyy-MM-dd HH:mm:ss')
+    # Try to get file version if any (for executables/assemblies). Most text files will be null.
+    try {
+        $ver = (Get-Item -LiteralPath $f.FullName).VersionInfo.FileVersion
+    } catch {
+        $ver = $null
+    }
+    if ([string]::IsNullOrWhiteSpace($ver)) { $ver = 'n/a' }
+
+    # Write separators if not first file
+    if (-not $first) {
+        Add-Content -LiteralPath $OutFile -Value "% The end of previous file" -Encoding UTF8
+        Add-Content -LiteralPath $OutFile -Value "%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ" -Encoding UTF8
+        Add-Content -LiteralPath $OutFile -Value "%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ" -Encoding UTF8
+        Add-Content -LiteralPath $OutFile -Value "%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ" -Encoding UTF8
+        Add-Content -LiteralPath $OutFile -Value "%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ" -Encoding UTF8
+    }
+
+    $metaLine = "% the start of the next file,"
+    $metaLine2 = "%Address and name of the file from root folder: $rel | version: $ver | size: $size bytes | modified date and time: $mtime"
+
+    Add-Content -LiteralPath $OutFile -Value $metaLine -Encoding UTF8
+    Add-Content -LiteralPath $OutFile -Value $metaLine2 -Encoding UTF8
+
+    # Read file content raw (try-best)
+    try {
+        $content = Get-Content -LiteralPath $f.FullName -Raw -ErrorAction Stop
+        # Ensure final newline between files
+        if (-not $content.EndsWith("`n")) { $content += "`r`n" }
+        # Append content preserving text
+        # Use Out-File -Append to control encoding
+        $content | Out-File -FilePath $OutFile -Append -Encoding UTF8
+    } catch {
+        # If -Raw fails (binary or other), fallback to get bytes and write a hex-ish placeholder
+        $errNote = "% [Could not read file as text; binary or unreadable]"
+        Add-Content -LiteralPath $OutFile -Value $errNote -Encoding UTF8
+    }
+
+    $first = $false
+}
+
+# Final message to console
+Write-Host "Done. Output: $OutFile"
+
+% The end of previous file
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+% the start of the next file,
+%Address and name of the file from root folder: results.py | version: n/a | size: 1555 bytes | modified date and time: 2025-10-08 10:48:46
+from matplotlib import pyplot as plt
+
+
+class Results:
+    def __init__(self, results_dict):
+        self.inner_dict = results_dict
+
+    def __getitem__(self, key):
+        return self.inner_dict[key]
+
+    def keys(self):
+        return self.inner_dict.keys()
+
+    def items(self):
+        return self.inner_dict.items()
+
+    def values(self):
+        return self.inner_dict.values()
+
+    def plot(self, x='wavelength', y='RTot', c=None, fig=None, ax=None, show=False):
+        """
+        :param x: Variable to plot along the x-axis
+        :param y: Variable to plot along the y-axis
+        :param c: Variable to plot vs. x/y as distinct curves
+        :param fig: Figure to use for plotting. If None, will create with pyplot interface
+        :param ax: Axes to use for  plotting. If None, will create with pyplot interface.
+        :param show: Whether to show the plot using the pyplot interface. False by default.
+
+        :returns fig, ax: Figure and Axes objects created with matplotlib pyplot interface
+        """
+        if fig is None and ax is None:
+            fig, ax = plt.subplots()
+        elif fig is not None and ax is None:
+            ax = fig.add_subplot()
+
+        x_data = self[x]
+        if hasattr(y, '__iter__') and not isinstance(y, str):
+            y_data = [self[yy] for yy in y]
+        else:
+            y_data = [self[y]]
+
+        for dat in y_data:
+            ax.plot(x_data, dat)
+        ax.legend(y)
+        ax.set_xlabel(x)
+        ax.set_ylabel(y)
+
+        if show:
+            plt.show()
+
+        return fig, ax
+
+
+% The end of previous file
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+% the start of the next file,
+%Address and name of the file from root folder: run_merge.bat | version: n/a | size: 890 bytes | modified date and time: 2025-09-17 17:26:47
+@echo off
+REM run_merge.bat
+REM This batch file launches PowerShell with an execution policy bypass to run merge_contents.ps1
+REM Place this .bat in the same folder as merge_contents.ps1 and double-click it.
+
+setlocal
+
+REM Resolve script folder (so the .bat works even when started from other cwd)
+set "SCRIPT_DIR=%~dp0"
+REM Trim trailing backslash if any
+if "%SCRIPT_DIR:~-1%"=="\" set "SCRIPT_DIR=%SCRIPT_DIR:~0,-1%"
+
+REM Build full path to PS1
+set "PS1=%SCRIPT_DIR%\merge_contents.ps1"
+
+REM Check the PS1 exists
+if not exist "%PS1%" (
+  echo ERROR: Could not find "%PS1%". Make sure merge_contents.ps1 is in the same folder as this .bat.
+  pause
+  endlocal
+  exit /b 1
+)
+
+REM Run PowerShell (no profile, bypass execution policy) and wait for it to finish; window will close when done.
+powershell -NoProfile -ExecutionPolicy Bypass -Command "& '%PS1%'"
+endlocal
+
+% The end of previous file
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+% the start of the next file,
+%Address and name of the file from root folder: shorthand.py | version: n/a | size: 4518 bytes | modified date and time: 2025-10-08 10:48:46
+import numpy as np
+import scipy as sp
+import scipy.linalg
+import math
+
+inv = np.linalg.inv;
+matrixExponentiate = sp.linalg.expm
+matrixSquareRoot = sp.linalg.sqrtm
+sqrt = np.lib.scimath.sqrt; # Takes sqrt of complex numbers successfully
+sq = np.square;
+eig = sp.linalg.eig # Performs eigendecomposition of identity intuitively (vectors are unit vectors)
+norm = np.linalg.norm;
+sin = np.sin;
+cos = np.cos;
+pi = np.pi;
+dot = np.dot;
+cross = np.cross;
+diag = np.diag
+diagonal = np.diagonal
+conj = np.conj
+real = np.real
+imag = np.imag
+deg = pi / 180
+prod = np.prod
+
+def fftn(data):
+    """ Return the shifted version so the zeroth-order harmonic is in the center with
+    energy-conserving normalization """
+    dataShape = data.shape;
+    return np.fft.fftshift(np.fft.fftn(data)) / np.prod(dataShape);
+
+def complexArray(arrayInListForm):
+    """ Wrapper for numpy array declaration that forces arrays to be complex doubles """
+    return np.array(arrayInListForm, dtype=np.cdouble);
+
+def complexIdentity(matrixSize):
+    """ Wrapper for numpy identity declaration that forces arrays to be complex doubles """
+    if matrixSize == 1:
+        return 1
+    else:
+        return np.identity(matrixSize, dtype=np.cdouble);
+
+def complexZeros(matrixDimensionsTuple):
+    """ Wrapper for numpy zeros declaration that forces arrays to be complex doubles """
+    return np.zeros(matrixDimensionsTuple, dtype=np.cdouble);
+
+def complexOnes(matrixDimensionsTuple):
+    return np.ones(matrixDimensionsTuple, dtype=np.cdouble);
+
+def reshapeLowDimensionalData(data):
+    if hasattr(data, '__len__'):
+        dataShape = data.shape;
+    else:
+        dataShape = [1]
+        data = np.array([data])
+
+    if(len(dataShape) == 1): # we have only x-data.
+        Nx = dataShape[0];
+        data = data.reshape(Nx, 1, 1);
+    elif(len(dataShape) == 2): # We have x and y data
+            Nx = dataShape[0];
+            Ny = dataShape[1];
+            data = data.reshape(Nx, Ny, 1);
+    elif(len(dataShape) == 3): # We have x- y- and z-data (
+        data = data;
+    else:
+        raise ValueError(f"""Input data has too many ({len(dataShape)}) dimensions.
+        Only designed for up to 3 spatial dimensions""");
+
+    return data;
+
+def kroneckerDeltaVector(size):
+    vector = complexZeros(size)
+    zeroLocation = math.floor(size/2)
+    vector[zeroLocation] = 1
+    return vector
+
+
+def complexNumberArrayFromString(stringRow):
+    delimiter = 'i'
+    rowOfStrings = stringRow.split(delimiter)
+    rowOfStrings = [elem + "j" for elem in rowOfStrings]
+    rowOfStrings.remove("j")
+    rowOfStrings = np.array(rowOfStrings)
+    rowOfComplexNumbers = rowOfStrings.astype(np.cdouble)
+
+    return rowOfComplexNumbers
+
+def numpyArrayFromFile(filename):
+    """ Requires input file with all columns together on the same 18 rows """
+    fileHandle = open(filename, 'r')
+    delimiter = 'i'
+    fileLines = fileHandle.readlines()
+    data = None
+    i = 0
+    for line in fileLines:
+        line = line.replace(" ", "")
+        if line != "":
+            rowOfStrings = line.split(delimiter)
+            rowOfStrings = [elem + "j" for elem in rowOfStrings]
+            rowOfStrings.remove("\nj")
+            rowOfStrings = np.array(rowOfStrings)
+            rowOfComplexNumbers = rowOfStrings.astype(np.cdouble)
+            if i == 0:
+                data = rowOfComplexNumbers
+            else:
+                data = np.vstack((data, rowOfComplexNumbers))
+            i += 1
+
+    fileHandle.close()
+    return data;
+
+def numpyArrayFromSeparatedColumnsFile(filename):
+    """ Requires an input file with columns 1 through 6 in the first 18 columns followed by a
+    vertical spacer followed by columns 7 through 12 and so on """
+    fileHandle = open(filename, 'r')
+    fileLines = fileHandle.readlines()
+    data = [None, None, None]
+    rowNumber = 0
+    columnNumber = 0
+
+    for line in fileLines:
+        line = line.replace(" ", "")
+        line = line.replace("\n", "")
+        if line != "":
+            rowOfComplexNumbers = complexNumberArrayFromString(line)
+
+            if rowNumber == 0:
+                data[columnNumber] = rowOfComplexNumbers
+            else:
+                data[columnNumber] = np.vstack((data[columnNumber], rowOfComplexNumbers))
+            rowNumber += 1
+
+        if line == "": # This indicates we should start a new set of columns and append it to the old one
+            columnNumber += 1
+            rowNumber = 0
+
+    fileHandle.close()
+
+    data = np.hstack((data[0], data[1], data[2]))
+    return data
+
+% The end of previous file
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+% the start of the next file,
+%Address and name of the file from root folder: slicer.py | version: n/a | size: 1843 bytes | modified date and time: 2025-10-08 10:48:46
+import numpy as np
+
+class Slicer:
+    """
+    Helper class that slices arbitrary functions of x, y, and z into several layers.
+
+    :param func: Function f(x, y, z) to slice
+    :param Nx: Number of desired evaluation points along x.
+    :param Ny: Number of desired evaluation points along y.
+    :param Nz: Number of desired slices along z.
+    :param data: Raw 3-dimensional material property data
+
+    :param xmin: Minimum x-value
+    :param xmax: Maximum x value to be evaluated
+    :param ymin: Minimum y-value to be evaluated
+    :param ymax: Maximum y-value to be evaluated
+    :param zmxn: Minimum z-value to be evaluated
+    :param zmxn: Maximum z-value to be evaluated
+    """
+    def __init__(self, func=None, data=None, Nx=500, Ny=500, Nz=10,
+                 xmin=0, xmax=1, ymin=0, ymax=1, zmin=0, zmax=1):
+        if func is None and data is None:
+            raise ValueError('Must pass in a value for either func or data')
+
+        self.func = func
+        self.data = data
+
+        self.Nx = Nx
+        self.Ny = Ny
+        self.Nz = Nz
+
+        self.xmin = xmin
+        self.xmax = xmax
+        self.ymin = ymin
+        self.ymax = ymax
+        self.zmin = zmin
+        self.zmax = zmax
+
+    def coordinates(self):
+        x_coors = np.linspace(self.xmin, self.xmax, self.Nx)
+        y_coors = np.linspace(self.ymin, self.ymax, self.Ny)
+        z_coors = np.linspace(self.zmin, self.zmax, self.Nz)
+        x, y, z = np.meshgrid(x_coors, y_coors, z_coors, indexing='ij')
+        return x, y, z
+
+    def slice(self):
+        if self.func is not None:
+            return self._slice_func()
+        elif self.data is not None:
+            return self._slice_data()
+
+    def _slice_func(self):
+        x, y, z = self.coordinates()
+        return self.func(x, y, z)
+
+    def _slice_data(self):
+        raise NotImplementedError
+
+
+% The end of previous file
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+% the start of the next file,
+%Address and name of the file from root folder: solver.py | version: n/a | size: 13490 bytes | modified date and time: 2025-10-08 10:48:46
+from rcwa.shorthand import *
+from rcwa.matrices import *
+from rcwa.harmonics import kx_matrix, ky_matrix
+from rcwa import Layer, LayerStack, Results
+from copy import deepcopy
+from progressbar import ProgressBar, Bar, Counter, ETA
+from itertools import product
+
+
+class Solver:
+    """ Main class that invokes all methods necessary to solve an RCWA/TMM simulation
+
+    :param layer_stack: layerStack: Stack of layers to simulate
+    :param source: Source object which includes wavelength and direction information
+    :param n_harmonics: The number of harmonics in x, y to simulate (number of Fourier components). For planar films this should be 1. For 1D diffraction gratings this should be a single integer. For 2D periodic films this should be a 2-tuple. Must be an odd number.
+    """
+    def __init__(self, layer_stack, source, n_harmonics=1):
+        self.atol = None
+        self.rtol = None
+        self.max_iters = None
+        self.check_convergence = None
+
+        self.n_harmonics = n_harmonics
+        self.layer_stack = layer_stack
+        self.source = source
+        self.source.layer = layer_stack.incident_layer
+        self.layer_stack.source = source
+
+        self._initialize()
+        self._k_matrices()
+        self._gap_matrices()
+        self._outer_matrices()
+        self.results = []
+
+    def solve(self, *sweep_args, max_iters=50, atol=1e-3, rtol=1e-2, check_convergence=False, **sweep_kw):
+        """
+        Solves the simulation or performs a simulation sweep of the desired parameters
+
+        :param sweep_args: Objects along with their parameters to sweep. i.e. (layer, {'thickness': [1, 2, 2.5]})
+        :param sweep_kw: Source variables to sweep (theta, phi, wavelength, etc.). Can either be a single keyword argument or several. If several are used, all combinations of the two parameters will be made
+        :param max_iters: Maximum number of iterations to complete before convergence
+        :param atol: Absolute tolerance threshold for total reflectance at which simulation has converged
+        :param rtol: Relative tolerance threshold for total reflectance at which simulation has converged
+        :param check_convergence: If True, perform convergence testing for non-TMM simulations
+        """
+        self.atol = atol
+        self.rtol = rtol
+        self.max_iters = max_iters
+
+        self.check_convergence = check_convergence
+        self.converged = False
+        self.iters = 0
+        self.last_RTot = 1
+
+        self.results = []
+        self.sweep_objects, self.sweep_vars, self.sweep_vals = self._sweeps(*sweep_args, **sweep_kw)
+        n_sweeps = len(self.sweep_vals)
+
+        bar = ProgressBar(widgets=[Counter(), f'/{n_sweeps} ', Bar(), ETA()], maxval=n_sweeps).start()
+
+        for i, sweep in enumerate(self.sweep_vals):
+
+            self._assign_sweep_vars(sweep)
+
+            while not self.converged:
+
+                self._initialize()
+                self._inner_s_matrix()
+                self._global_s_matrix()
+                self._rt_quantities()
+                self.iters += 1
+                self.converged = self._check_converged()
+
+                if not self.converged:
+                    self.last_RTot = self.RTot
+                    self._increase_harmonics()
+
+            self._append_results()
+            self.iters = 0
+            self.last_RTot = 1
+            self.converged = False
+            bar.update(i)
+
+        bar.finish()
+        self.results = self._package_results()
+        return self.results
+
+    def fields(self, component='Ex', layer=None, x_min=0, x_max=0, y_min=0, y_max=0, z_min=0, z_max=0, N_x=1, N_y=1, N_z=1):
+        # First, we find the forward- and backward propagating waves in the incident region
+        V_inc, W_inc, L_inc, _ = self.layer_stack.incident_layer.VWLX_matrices()
+        c_incident = np.linalg.inv(W_inc) @ s_incident(self.source, self.n_harmonics)
+        c_reflected = self.SGlobal[0, 0] @ c_incident
+
+        if layer is self.layer_stack.incident_layer:
+            c_forward_target = c_incident
+            c_backward_target = c_reflected
+        elif layer is self.layer_stack.transmission_layer:
+            c_forward_target = self.SGlobal[1, 0] @ c_incident
+            c_backward_target = 0 * c_incident
+        else:
+            raise NotImplementedError
+
+        V_target, W_target, L_target, _ = self.layer_stack.incident_layer.VWLX_matrices()
+        z = z_min
+
+        if 'E' in component:
+            field_target = W_target @ matrixExponentiate(-1 * L_target * self.source.k0 * z) @ c_forward_target + \
+                           W_target @ matrixExponentiate(L_target * self.source.k0 * z) @ c_backward_target
+
+        return field_target
+
+    @property
+    def base_crystal(self):
+        return self.layer_stack.crystal
+
+    def grad(self, loss_func, obj, attribute):
+        """
+        Computes the gradient of a user-specified loss function with respect to an attribute
+        of an object in the simulation.
+
+        :param loss_func: The loss function you are trying to optimize. Should take a single argument
+        of the Solver Results object.
+        :param obj: The object whose attribute you want to tweak in order to do the optimization (i.e. layer3)
+        :param attribute: The attribute of the object you want to tweak (i.e. 'thickness' or 'er')
+        """
+        raise NotImplementedError
+
+
+    def _increase_harmonics(self, factor=1):
+        n_harmonics = np.array(self.n_harmonics)
+        n_harmonics *= factor
+        n_harmonics += 2
+        even_elements = np.logical_not((n_harmonics % 2).astype(bool))
+        n_harmonics[even_elements] -= 1
+        if n_harmonics.size == 1:
+            self.n_harmonics = int(n_harmonics)
+        else:
+            self.n_harmonics = tuple(n_harmonics)
+
+    def _check_converged(self):
+        converged = False
+        if self.iters >= self.max_iters:
+            raise RuntimeError('Exceeded maximum number of iterations {self.max_iters} without convergence. Aborting.')
+
+        self.relative_error = np.abs((self.last_RTot - self.RTot)/self.last_RTot)
+        self.absolute_error = np.abs(self.RTot - self.last_RTot)
+
+        if self.TMMSimulation and self.iters > 0:
+            converged = True
+
+        if not self.check_convergence:
+            converged = True
+
+        if self.relative_error < self.rtol and self.absolute_error < self.atol:
+            converged = True
+
+        return converged
+
+    @staticmethod
+    def _sweeps(*sweep_args, **sweep_kw):
+        sweep_objects = []
+        sweep_vars = []
+        sweep_vectors = []
+        for pair in sweep_args:
+            obj, param_dict = pair
+            for key, val in param_dict.items():
+                sweep_objects.append(obj)
+                sweep_vars.append(key)
+                sweep_vectors.append(val)
+        for key, val in sweep_kw.items():
+            sweep_objects.append(None)
+            sweep_vars.append(key)
+            sweep_vectors.append(val)
+
+        sweep_vals = list(product(*sweep_vectors))
+
+        return sweep_objects, sweep_vars, sweep_vals
+
+    def _assign_sweep_vars(self, sweep):
+        for obj, var, val in zip(self.sweep_objects, self.sweep_vars, sweep):
+            if obj is None:
+                obj = self.source
+
+            if not hasattr(obj, var):
+                raise ValueError(f"""Object {obj} does not have attribute {var}.
+                                 Invalid sweep variable. Available default variables are 
+                                 "phi", "theta", "wavelength", "pTEM"'
+                                 """)
+            setattr(obj, var, val)
+
+    def _couple_source(self):
+        self.source.layer = self.layer_stack.incident_layer
+        self.layer_stack.source = self.source
+
+    def _rt_quantities(self):
+        self.rx, self.ry, self.rz = calculateReflectionCoefficient(self.SGlobal, self.Kx, self.Ky,
+                                                                   self.KzReflectionRegion, self.WReflectionRegion, self.source, self.n_harmonics)
+        self.tx, self.ty, self.tz = calculateTransmissionCoefficient(self.SGlobal, self.Kx, self.Ky,
+                                                                     self.KzTransmissionRegion, self.WTransmissionRegion, self.source, self.n_harmonics)
+        self.R = calculateDiffractionReflectionEfficiency(self.rx, self.ry, self.rz, self.source,
+                                                          self.KzReflectionRegion, self.layer_stack, self.n_harmonics)
+        self.T = calculateDiffractionTransmissionEfficiency(self.tx, self.ty, self.tz, self.source,
+                                                            self.KzTransmissionRegion, self.layer_stack, self.n_harmonics)
+        self.RTot = np.sum(self.R)
+        self.TTot = np.sum(self.T)
+        self.conservation = self.RTot + self.TTot
+
+        if self.TMMSimulation:
+            self.rTEM = calculateTEMReflectionCoefficientsFromXYZ(self.source, self.rx, self.ry, self.rz)
+
+    def _package_results(self):
+        """
+        Turns the list of simulation results created during simulation into something more useful
+        """
+
+        n_results = len(self.results)
+        result_keys = self.results[0].keys()
+        new_results = {}
+
+        if n_results > 1:
+            for key in result_keys:
+                new_results[key] = []
+                for result in self.results:
+                    new_results[key].append(result[key])
+
+            for i, key in enumerate(self.sweep_vars):
+                new_results[key] = []
+                for sweep in self.sweep_vals:
+                    new_results[key].append(sweep[i])
+        else:
+            new_results = self.results[0]
+
+        new_results = Results(new_results)
+        return new_results
+
+    def _append_results(self):
+        """
+        Packages the results from the simulation into a dictionary
+        """
+        tempResults = {}
+        tempResults['rx'], tempResults['ry'], tempResults['rz'] = deepcopy((self.rx, self.ry, self.rz))
+        tempResults['tx'], tempResults['ty'], tempResults['tz'] = deepcopy((self.tx, self.ty, self.tz))
+        tempResults['R'], tempResults['T'] = deepcopy((self.R, self.T))
+        tempResults['RTot'], tempResults['TTot'], tempResults['conservation'] = \
+                deepcopy((self.RTot, self.TTot, self.conservation))
+        tempResults['crystal'] = deepcopy(self.base_crystal)
+        tempResults['source'] = deepcopy(self.source)
+        tempResults['S'] = deepcopy(self.SGlobal)
+        tempResults['Si'] = deepcopy(self.Si)
+
+        if self.TMMSimulation:
+            tempResults['rTE'] = self.rTEM[0]
+            tempResults['rTM'] = self.rTEM[1]
+            rho = tempResults['rTM'] / tempResults['rTE']
+            tempResults['tanPsi'] = np.abs(rho)
+            tempResults['cosDelta'] = cos(np.angle(rho))
+            tempResults['delta'] = np.angle(rho)
+
+        self.results.append(tempResults)
+
+    @property
+    def _k_dimension(self):
+        if self.TMMSimulation:
+            k_dim = 1
+        else:
+            k_dim = np.prod(self.n_harmonics)
+
+        return k_dim
+
+    @property
+    def _s_element_dimension(self):
+        s_dim = self._k_dimension * 2
+        return s_dim
+        
+    @property
+    def _s_element_shape(self):
+        s_dim = self._s_element_dimension
+        s_shape = (s_dim, s_dim)
+        return s_shape
+
+
+
+    def _k_matrices(self):
+        """
+        Sets up the Kx, Ky, and Kz matrices for solving the simulation once the source, crystal, and
+        number harmonics are known.
+        """
+        self.Kx = kx_matrix(self.source, self.base_crystal, self.n_harmonics)
+        self.Ky = ky_matrix(self.source, self.base_crystal, self.n_harmonics)
+        self.layer_stack.Kx = self.Kx
+        self.layer_stack.Ky = self.Ky
+
+        self.KzReflectionRegion = self.layer_stack.incident_layer.Kz_backward()
+        self.KzTransmissionRegion = self.layer_stack.transmission_layer.Kz_forward()
+
+    def _outer_matrices(self):
+        self.WReflectionRegion = complexIdentity(self._s_element_dimension)
+        self.WTransmissionRegion = complexIdentity(self._s_element_dimension)
+
+    def _gap_matrices(self):
+        self.layer_stack.set_gap_layer()
+        self.KzGapRegion = self.layer_stack.gapLayer.Kz_gap()
+
+    def _inner_s_matrix(self):
+        for i, layer in enumerate(self.layer_stack.internal_layers):
+            self.Si[i] = layer.S_matrix()
+            self.SGlobal = redheffer_product(self.SGlobal, self.Si[i])
+
+    def _global_s_matrix(self):
+        self.STransmission = self.layer_stack.transmission_layer.S_matrix()
+        self.SReflection = self.layer_stack.incident_layer.S_matrix()
+        self.SGlobal = redheffer_product(self.SGlobal, self.STransmission)
+        self.SGlobal = redheffer_product(self.SReflection, self.SGlobal)
+
+    def _initialize(self):
+        if self.base_crystal is None:
+            self.TMMSimulation = True
+        else:
+            self.TMMSimulation = False
+
+        self.SGlobal = S_matrix_transparent(self._s_element_shape)
+        self.rx, self.ry, self.rz = None, None, None
+        self.tx, self.ty, self.tz = None, None, None
+        self.R, self.T, self.RTot, self.TTot, self.CTot = None, None, None, None, None
+        self.Si = [None for _ in range(len(self.layer_stack.internal_layers))]
+
+        self._couple_source()
+        self.layer_stack.set_convolution_matrices(self.n_harmonics)
+        self._k_matrices()
+        self._gap_matrices()
+        self._outer_matrices()
+
+% The end of previous file
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+% the start of the next file,
+%Address and name of the file from root folder: source.py | version: n/a | size: 3808 bytes | modified date and time: 2025-10-08 10:48:46
+from rcwa.shorthand import *
+from rcwa.utils import k_vector
+from rcwa import Layer
+
+
+class Source:
+    """
+    Class for defining monochromatic excitation source
+
+    :param wavelength: The wavelength (in microns, or your preferred length unit due to the scale-invariance of Maxwell's equations.
+    :param theta: Angle with respect to the vector normal to the layer stack, in radians
+    :param phi: Rotation angle amount the vector normal to the layer stack
+    :param pTEM: Polarization vector for TE/TM polarization fraction (can be complex)
+    :param layer: Layer source is located in
+    """
+    def __init__(self, wavelength=2*pi, theta=0, phi=0, pTEM=[1, 1], layer=Layer(er=1, ur=1)):
+        self._free_space_wavelength = wavelength
+        self.layer = layer
+        self.k0 = 2*pi / self._free_space_wavelength
+        self._phi = phi
+        self._theta = theta
+        self._set_k_incident()
+
+        self._pTEM = pTEM / norm(pTEM)
+
+        self._set_tem_vectors()
+        self.pX = (self.pTE*self.aTE + self.pTM*self.aTM)[0]
+        self.pY = (self.pTE*self.aTE + self.pTM*self.aTM)[1]
+
+    def __eq__(self, other):
+        if not isinstance(other, Source):
+            raise ValueError(f'Cannot compare Source() and non-source object {type(other)}')
+        return self._free_space_wavelength == other._free_space_wavelength and \
+               self.k0 == other.k0 and \
+               self.theta == other.theta and \
+               self.phi == other.phi and \
+               np.all(self.pTE == other.pTE) and \
+               np.all(self.pTM == other.pTM) and \
+               self.pX == other.pX and \
+               self.pY == other.pY and \
+               np.all(self.k_incident == other.k_incident) and \
+               np.all(self.aTE == other.aTE) and \
+               np.all(self.aTM == other.aTM)
+
+    def __str__(self):
+        return f'wavelength: {self._free_space_wavelength:.3f}, (theta, phi) = ({self.theta:.4f}, {self.phi:.4f})\n' + \
+                f'kIncident: {self.k_incident}, polarization: ({self.pTE:.3f}, {self.pTM:.3f})\n' + \
+                f'TEM vector: ({self.aTE}, {self.aTM})\n'
+
+    @property
+    def wavelength(self):
+        return self._free_space_wavelength
+
+    @wavelength.setter
+    def wavelength(self, wavelength):
+        self._free_space_wavelength = wavelength
+        self.k0 = 2 * pi / wavelength
+        self._set_k_incident()
+
+    def _set_tem_vectors(self):
+        deviceNormalUnitVector = complexArray([0, 0, -1])
+        epsilon = 1e-3
+
+        k_norm = self.k_incident / np.linalg.norm(self.k_incident)
+
+        if abs(k_norm[0]) < epsilon and abs(k_norm[0]) < epsilon:
+            self.aTE = np.array([0, 1, 0])
+        else:
+            self.aTE = - np.cross(deviceNormalUnitVector, k_norm)
+            self.aTE = self.aTE / norm(self.aTE)
+
+        self.aTM = np.cross(self.aTE, k_norm)
+        self.aTM /= norm(self.aTM)
+        self.ATEM = np.vstack((self.aTE, self.aTM)) # matrix that goes from x/y basis to TE/TM basis
+
+    @property
+    def pTEM(self):
+        return self._pTEM
+
+    @property
+    def pTE(self):
+        return self.pTEM[0]
+
+    @property
+    def pTM(self):
+        return self.pTEM[1]
+
+    @pTEM.setter
+    def pTEM(self, pTEM):
+        self._pTEM = pTEM / np.linalg.norm(pTEM)
+
+    @property
+    def phi(self):
+        return self._phi
+
+    @phi.setter
+    def phi(self, phi):
+        self._phi = phi
+        self._set_k_incident()
+
+    @property
+    def theta(self):
+        return self._theta
+
+    @theta.setter
+    def theta(self, theta):
+        self._theta = theta
+        self._set_k_incident()
+
+    @property
+    def k_incident(self):
+        return self._k_incident
+
+    def _set_k_incident(self):
+        self._k_incident = k_vector(self, self.layer, normalize=True)
+
+zeroSource = Source(float("inf"))
+
+% The end of previous file
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+%â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆ
+% the start of the next file,
+%Address and name of the file from root folder: testing.py | version: n/a | size: 808 bytes | modified date and time: 2025-10-08 10:48:46
+import numpy as np
+from rcwa import Source
+
+
+def assert_almost_equal(a, b, absoluteTolerance=1e-10, relativeTolerance=1e-9, errorMessage=""):
+    if isinstance(a, Source):
+        assert a == b
+    np.testing.assert_allclose(a, b, atol=absoluteTolerance, rtol=relativeTolerance, err_msg=errorMessage);
+    if isinstance(a, np.ndarray) or isinstance(b, np.ndarray):
+        assert(a.shape == b.shape)
+
+    if np.isscalar(a):
+        assert np.isscalar(a) and np.isscalar(b)
+    else:
+        np.testing.assert_equal(type(a), type(b))
+
+
+def get_unequal_indices(a, b, absoluteTolerance=1e-10, relativeTolerance=1e-9):
+    truthArray = np.greater(np.abs(a - b),
+            (absoluteTolerance + relativeTolerance * np.abs(a - b)*np.ones(a.shape)))
+    indexArray = np.argwhere(truthArray)
+    return indexArray
+
+

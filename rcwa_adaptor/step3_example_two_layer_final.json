@@ -1,0 +1,16 @@
+{
+  "schema_version": "step3-0.8",
+  "freq_GHz": {"start": 1.0, "stop": 18.0, "points": 21},
+  "cell": {"Lx_m": 0.03, "Ly_m": 0.03},
+  "layers": {
+    "L1": {"csv": "../m1.csv", "thickness_m": 0.0045},
+    "L3": {"csv": "../m3.csv", "thickness_m": 0.01}
+  },
+  "polarization": "TE",
+  "n_harmonics": 1,
+  "backing": {"type": "metal", "eps_imag_clamp": 1e8},
+  "angles": {"theta_deg": 0.0, "phi_deg": 0.0},
+  "solver": {"check_convergence": false, "atol": 1e-3, "rtol": 1e-2, "max_iters": 20},
+  "tolerances": {"energy": 1e-3, "nonnegativity": 1e-4, "strict": true},
+  "output_prefix": "step3_two_layer_final"
+}

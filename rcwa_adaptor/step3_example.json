@@ -1,0 +1,63 @@
+{
+    "schema_version":  "step3-0.1",
+    "freq_GHz":  {
+                     "start":  1.0,
+                     "stop":  18.0,
+                     "points":  15
+                 },
+    "cell":  {
+                 "Lx_m":  0.03,
+                 "Ly_m":  0.03
+             },
+    "layers":  {
+                   "L1":  {
+                              "csv":  "../m1.csv",
+                              "thickness_m":  0.003
+                          },
+                   "L2_mask":  {
+                                   "csv_solid":  "../m3.csv",
+                                   "csv_hole":  "../mhole.csv",
+                                   "thickness_m":  0.005,
+                                   "grid":  {
+                                                "Nx":  32,
+                                                "Ny":  32
+                                            },
+                                   "holes":  [
+                                                 {
+                                                     "x_m":  0.0,
+                                                     "y_m":  0.0,
+                                                     "diameter_m":  0.01
+                                                 }
+                                             ]
+                               },
+                   "L3":  {
+                              "csv":  "../m3.csv",
+                              "thickness_m":  0.004
+                          }
+               },
+    "polarization":  "TE",
+    "n_harmonics":  [
+                        9,
+                        9
+                    ],
+    "backing":  {
+                    "type":  "metal",
+                    "eps_imag_clamp":  100000000
+                },
+    "angles":  {
+                   "theta_deg":  0.0,
+                   "phi_deg":  0.0
+               },
+    "solver":  {
+                   "check_convergence":  false,
+                   "atol":  0.001,
+                   "rtol":  0.01,
+                   "max_iters":  20
+               },
+    "output_prefix":  "step3_demo_mask",
+    "tolerances":  {
+                       "nonnegativity":  0.001,
+                       "energy":  10,
+                       "strict":  false
+                   }
+}

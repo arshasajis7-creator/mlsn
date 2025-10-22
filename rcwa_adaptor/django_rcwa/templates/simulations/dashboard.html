@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}RCWA Dashboard{% endblock %}
+
+{% block content %}
+<h1>RCWA Simulation Dashboard</h1>
+<p>
+    This is the placeholder dashboard for the upcoming Django-based control panel.
+    In future phases it will list simulation jobs, materials, and geometry presets.
+</p>
+
+<section>
+    <h2>Next Steps</h2>
+    <ul>
+        <li>Create materials management page.</li>
+        <li>Implement job builder wizard.</li>
+        <li>Wire Celery tasks to run adapter_step1.py.</li>
+    </ul>
+</section>
+{% endblock %}

@@ -1,0 +1,11 @@
+{
+  "schema_version": "step1-0.1",
+  "freq_GHz": {"start": 1.0, "stop": 18.0, "points": 61},
+  "layer": {"csv": "../m1.csv", "thickness_m": 0.003},
+  "angles": {"theta_deg": 0.0, "phi_deg": 0.0},
+  "polarization": "AVG",
+  "n_harmonics": 1,
+  "backing": {"type": "metal", "eps_imag_clamp": 1e8},
+  "tolerances": {"energy": 0.001, "nonnegativity": 1e-6},
+  "output_prefix": "step1_demo_single"
+}
