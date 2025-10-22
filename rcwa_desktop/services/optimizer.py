@@ -18,7 +18,7 @@ from __future__ import annotations
 import math
 import random
 from dataclasses import dataclass, replace
-from typing import Iterable, List, Sequence, Tuple
+from typing import Iterable, List, Tuple
 
 from ..models.configuration import Configuration, MaskHole, MaskSpec
 
@@ -38,19 +38,10 @@ class OptimizationSettings:
     random_seed: int | None = None
     hole_count_range: Tuple[int, int] = (1, 9)
     hole_radius_range_m: Tuple[float, float] = (0.0005, 0.0045)
-    square_aspect_limits: Tuple[float, float] = (0.5, 2.0)
     cell_margin_fraction: float = 0.8
     layer1_thickness_range_m: Tuple[float, float] = (0.001, 0.008)
     mask_thickness_range_m: Tuple[float, float] = (0.0005, 0.004)
     layer3_thickness_range_m: Tuple[float, float] = (0.002, 0.015)
-    material_choices: Sequence[str] = (
-        "m1.csv",
-        "m2.csv",
-        "m3.csv",
-        "metal.csv",
-        "mhole.csv",
-    )
-    shapes: Sequence[str] = ("circle", "square")
 
 
 @dataclass
@@ -103,13 +94,11 @@ def _sample_configuration(
     layer_top = replace(
         base_config.layer_top,
         thickness_m=_uniform(settings.layer1_thickness_range_m, rng),
-        material_csv=rng.choice(tuple(settings.material_choices)),
     )
     mask = _sample_mask(base_config.mask, base_config, settings, rng)
     layer_bottom = replace(
         base_config.layer_bottom,
         thickness_m=_uniform(settings.layer3_thickness_range_m, rng),
-        material_csv=rng.choice(tuple(settings.material_choices)),
     )
 
     polarization = rng.choice(["TE", "TM"])
@@ -140,33 +129,28 @@ def _sample_mask(
 
     holes: List[MaskHole] = []
     for _ in range(hole_count):
-        shape = rng.choice(tuple(settings.shapes))
-        x = rng.uniform(-half_x, half_x)
-        y = rng.uniform(-half_y, half_y)
+        radius = _uniform(settings.hole_radius_range_m, rng)
+        radius = min(radius, half_x * settings.cell_margin_fraction, half_y * settings.cell_margin_fraction)
+        diameter = max(radius * 2.0, 1e-6)
 
-        if shape == "square":
-            size1 = _uniform(settings.hole_radius_range_m, rng) * 2.0
-            aspect = rng.uniform(*settings.square_aspect_limits)
-            size2 = max(size1 * aspect, 1e-4)
-        else:
-            size1 = _uniform(settings.hole_radius_range_m, rng) * 2.0
-            size2 = None
+        max_x = max(half_x * settings.cell_margin_fraction - radius, 0.0)
+        max_y = max(half_y * settings.cell_margin_fraction - radius, 0.0)
+        x = rng.uniform(-max_x, max_x) if max_x > 0 else 0.0
+        y = rng.uniform(-max_y, max_y) if max_y > 0 else 0.0
 
         holes.append(
             MaskHole(
-                shape=shape,
+                shape="circle",
                 x_m=x,
                 y_m=y,
-                size1=size1,
-                size2=size2,
+                size1=diameter,
+                size2=None,
             )
         )
 
     return replace(
         mask,
         thickness_m=_uniform(settings.mask_thickness_range_m, rng),
-        solid_csv=rng.choice(tuple(settings.material_choices)),
-        hole_csv=rng.choice(tuple(settings.material_choices)),
         holes=holes,
     )
 

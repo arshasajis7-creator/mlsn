@@ -197,13 +197,9 @@ class MainWindow(QMainWindow):
         layout = QVBoxLayout()
         controls_layout = QHBoxLayout()
 
-        self.add_circle_btn = QPushButton("افزودن دایره")
+        self.add_circle_btn = QPushButton("افزودن حفره")
         self.add_circle_btn.clicked.connect(lambda: self._add_hole_row("circle"))
         controls_layout.addWidget(self.add_circle_btn)
-
-        self.add_square_btn = QPushButton("افزودن مربع")
-        self.add_square_btn.clicked.connect(lambda: self._add_hole_row("square"))
-        controls_layout.addWidget(self.add_square_btn)
 
         self.remove_hole_btn = QPushButton("حذف انتخاب شده")
         self.remove_hole_btn.clicked.connect(self._remove_selected_holes)
@@ -215,13 +211,12 @@ class MainWindow(QMainWindow):
 
         controls_layout.addStretch(1)
 
-        self.holes_table = QTableWidget(0, 5)
+        self.holes_table = QTableWidget(0, 4)
         self.holes_table.setHorizontalHeaderLabels([
             "شکل",
             "X (mm)",
             "Y (mm)",
-            "اندازه ۱ (mm)",
-            "اندازه ۲ (mm)",
+            "قطر (mm)",
         ])
         self.holes_table.horizontalHeader().setStretchLastSection(True)
         self.holes_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
@@ -446,6 +441,9 @@ class MainWindow(QMainWindow):
             theta_deg=self.theta_spin.value(),
             phi_deg=self.phi_spin.value(),
             output_prefix=self.output_prefix.text() or "desktop_config",
+            backing=self.current_config.backing,
+            solver=self.current_config.solver,
+            tolerances=self.current_config.tolerances,
         )
 
         return config
@@ -459,15 +457,15 @@ class MainWindow(QMainWindow):
         row = self.holes_table.rowCount()
         self.holes_table.insertRow(row)
 
-        default = MaskHole(shape=shape, x_m=0.0, y_m=0.0, size1=0.001, size2=None)
+        default = MaskHole(shape="circle", x_m=0.0, y_m=0.0, size1=0.001, size2=None)
         hole = hole or default
 
-        self.holes_table.setItem(row, 0, QTableWidgetItem(hole.shape))
+        display_shape = "circle" if hole.shape not in {"circle"} else hole.shape
+
+        self.holes_table.setItem(row, 0, QTableWidgetItem(display_shape))
         self.holes_table.setItem(row, 1, QTableWidgetItem(f"{hole.x_m * 1000.0:.4f}"))
         self.holes_table.setItem(row, 2, QTableWidgetItem(f"{hole.y_m * 1000.0:.4f}"))
-        self.holes_table.setItem(row, 3, QTableWidgetItem(f"{hole.size1 * 1000.0:.4f}"))
-        size2 = hole.size2 if hole.size2 is not None else hole.size1
-        self.holes_table.setItem(row, 4, QTableWidgetItem(f"{size2 * 1000.0:.4f}"))
+        self.holes_table.setItem(row, 3, QTableWidgetItem(f"{hole.adapter_diameter() * 1000.0:.4f}"))
 
     def _remove_selected_holes(self) -> None:
         selected = self.holes_table.selectionModel().selectedRows()
@@ -480,13 +478,10 @@ class MainWindow(QMainWindow):
             shape_item = self.holes_table.item(row, 0)
             if shape_item is None:
                 continue
-            shape = shape_item.text().strip().lower() or "circle"
             x = self._parse_table_float(row, 1) / 1000.0
             y = self._parse_table_float(row, 2) / 1000.0
-            size1 = max(self._parse_table_float(row, 3) / 1000.0, 1e-6)
-            size2_value = self._parse_table_float(row, 4) / 1000.0
-            size2 = size2_value if shape == "square" else None
-            holes.append(MaskHole(shape=shape, x_m=x, y_m=y, size1=size1, size2=size2))
+            diameter = max(self._parse_table_float(row, 3) / 1000.0, 1e-6)
+            holes.append(MaskHole(shape="circle", x_m=x, y_m=y, size1=diameter, size2=None))
         return holes
 
     def _parse_table_float(self, row: int, column: int) -> float:
