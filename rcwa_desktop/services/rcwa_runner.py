@@ -7,7 +7,10 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Tuple
 
-from models.configuration import Configuration, save_configuration
+try:  # pragma: no cover - exercised in packaging environments
+    from ..models.configuration import Configuration, save_configuration
+except ImportError:  # pragma: no cover - fallback when run as script
+    from models.configuration import Configuration, save_configuration
 
 
 @dataclass
