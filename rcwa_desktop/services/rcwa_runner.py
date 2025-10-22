@@ -7,7 +7,10 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Tuple
 
-from models.configuration import Configuration, save_configuration
+try:  # pragma: no cover - exercised in packaging environments
+    from ..models.configuration import Configuration, save_configuration
+except ImportError:  # pragma: no cover - fallback when run as script
+    from models.configuration import Configuration, save_configuration
 
 
 @dataclass
@@ -19,7 +22,9 @@ class SimulationResult:
     RL_dB: List[float]
 
 
-def run_simulation(config: Configuration, repo_root: Path) -> SimulationResult:
+def run_simulation(
+    config: Configuration, repo_root: Path, *, log_dir: Path | None = None
+) -> SimulationResult:
     """
     Execute adapter_step1.py with the provided configuration.
 
@@ -55,8 +60,15 @@ def run_simulation(config: Configuration, repo_root: Path) -> SimulationResult:
 
         if completed.returncode != 0:
             raise RuntimeError(
-                f"Simulation failed with exit code {completed.returncode}\nSTDOUT:\n{stdout}\nSTDERR:\n{stderr}"
+                f"Simulation failed with exit code {completed.returncode}\n"
+                f"STDOUT:\n{stdout}\nSTDERR:\n{stderr}"
             )
+
+    if log_dir is not None:
+        log_dir.mkdir(parents=True, exist_ok=True)
+        (log_dir / "adapter_stdout.txt").write_text(stdout, encoding="utf-8")
+        (log_dir / "adapter_stderr.txt").write_text(stderr, encoding="utf-8")
+        save_configuration(config, log_dir / "config.json")
 
     # Expect results in rcwa_adaptor directory
     output_csv = working_dir / f"{config.output_prefix}_step1_results.csv"
@@ -64,6 +76,12 @@ def run_simulation(config: Configuration, repo_root: Path) -> SimulationResult:
         raise FileNotFoundError(f"Expected results CSV not found at {output_csv}")
 
     freq, rl = _load_rl_curve(output_csv)
+
+    if log_dir is not None and output_csv.exists():
+        destination = log_dir / output_csv.name
+        if destination != output_csv:
+            destination.write_text(output_csv.read_text(encoding="utf-8"), encoding="utf-8")
+
     return SimulationResult(
         output_csv=output_csv,
         stdout=stdout,
