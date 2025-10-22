@@ -73,36 +73,44 @@ class MaskHole:
         shape = str(data.get("type", "circle")).lower()
         if shape not in {"circle", "square"}:
             shape = "circle"
-        if shape == "circle":
-            size1 = float(data.get("diameter_m", data.get("size1", 0.0)))
-            size2 = None
-        else:
-            size1 = float(data.get("width_m", data.get("size1", 0.0)))
-            size2 = float(data.get("height_m", data.get("size2", size1)))
-        return cls(
-            shape=shape,
-            x_m=float(data.get("x_m", 0.0)),
-            y_m=float(data.get("y_m", 0.0)),
-            size1=size1,
-            size2=size2,
-        )
 
-    def to_json(self) -> Dict[str, Any]:
+        x = float(data.get("x_m", 0.0))
+        y = float(data.get("y_m", 0.0))
+        diameter = float(data.get("diameter_m", data.get("size1", 0.0)))
+
+        if shape == "square":
+            width = float(data.get("width_m", data.get("size1", diameter)))
+            height = float(data.get("height_m", data.get("size2", width)))
+            size1 = max(width, 0.0)
+            size2 = max(height, 0.0)
+        else:
+            size1 = max(diameter, 0.0)
+            size2 = None
+
+        return cls(shape=shape, x_m=x, y_m=y, size1=size1, size2=size2)
+
+    def adapter_diameter(self) -> float:
+        """Return a circle diameter compatible with the RCWA adapter."""
+
         if self.shape == "square":
             height = self.size2 if self.size2 is not None else self.size1
-            return {
-                "type": "square",
-                "x_m": self.x_m,
-                "y_m": self.y_m,
-                "width_m": self.size1,
-                "height_m": height,
-            }
-        return {
-            "type": "circle",
+            return max(min(self.size1, height), 0.0)
+        return max(self.size1, 0.0)
+
+    def to_json(self) -> Dict[str, Any]:
+        data: Dict[str, Any] = {
+            "type": self.shape,
             "x_m": self.x_m,
             "y_m": self.y_m,
-            "diameter_m": self.size1,
+            "diameter_m": self.adapter_diameter(),
         }
+        if self.shape == "square":
+            height = self.size2 if self.size2 is not None else self.size1
+            data.update({
+                "width_m": self.size1,
+                "height_m": height,
+            })
+        return data
 
 
 @dataclass
@@ -137,6 +145,69 @@ class MaskSpec:
         }
 
 
+@dataclass
+class BackingSpec:
+    type: str = "metal"
+    eps_imag_clamp: float = 1e8
+
+    @classmethod
+    def from_json(cls, data: Dict[str, Any]) -> "BackingSpec":
+        return cls(
+            type=str(data.get("type", "metal")),
+            eps_imag_clamp=float(data.get("eps_imag_clamp", 1e8)),
+        )
+
+    def to_json(self) -> Dict[str, Any]:
+        return {"type": self.type, "eps_imag_clamp": self.eps_imag_clamp}
+
+
+@dataclass
+class SolverSpec:
+    check_convergence: bool = False
+    atol: float = 1e-3
+    rtol: float = 1e-2
+    max_iters: int = 50
+
+    @classmethod
+    def from_json(cls, data: Dict[str, Any]) -> "SolverSpec":
+        return cls(
+            check_convergence=bool(data.get("check_convergence", False)),
+            atol=float(data.get("atol", 1e-3)),
+            rtol=float(data.get("rtol", 1e-2)),
+            max_iters=int(data.get("max_iters", 50)),
+        )
+
+    def to_json(self) -> Dict[str, Any]:
+        return {
+            "check_convergence": self.check_convergence,
+            "atol": self.atol,
+            "rtol": self.rtol,
+            "max_iters": self.max_iters,
+        }
+
+
+@dataclass
+class ToleranceSpec:
+    energy: float = 0.5
+    nonnegativity: float = 1e-3
+    strict: bool = False
+
+    @classmethod
+    def from_json(cls, data: Dict[str, Any]) -> "ToleranceSpec":
+        return cls(
+            energy=float(data.get("energy", 0.5)),
+            nonnegativity=float(data.get("nonnegativity", 1e-3)),
+            strict=bool(data.get("strict", False)),
+        )
+
+    def to_json(self) -> Dict[str, Any]:
+        return {
+            "energy": self.energy,
+            "nonnegativity": self.nonnegativity,
+            "strict": self.strict,
+        }
+
+
 # ---------------------------------------------------------------------------
 # Complete configuration
 
@@ -145,14 +216,30 @@ class MaskSpec:
 class Configuration:
     freq: FrequencySpec = field(default_factory=FrequencySpec)
     cell: CellSpec = field(default_factory=CellSpec)
-    layer_top: LayerSpec = field(default_factory=lambda: LayerSpec(thickness_m=0.004))
-    mask: MaskSpec = field(default_factory=MaskSpec)
-    layer_bottom: LayerSpec = field(default_factory=lambda: LayerSpec(thickness_m=0.010))
+    layer_top: LayerSpec = field(
+        default_factory=lambda: LayerSpec(material_csv="m1.csv", thickness_m=0.003)
+    )
+    mask: MaskSpec = field(
+        default_factory=lambda: MaskSpec(
+            solid_csv="m3.csv",
+            hole_csv="mhole.csv",
+            thickness_m=0.005,
+            grid_nx=32,
+            grid_ny=32,
+            holes=[MaskHole(size1=0.01)],
+        )
+    )
+    layer_bottom: LayerSpec = field(
+        default_factory=lambda: LayerSpec(material_csv="m3.csv", thickness_m=0.004)
+    )
     polarization: str = "TE"
     n_harmonics: List[int] = field(default_factory=lambda: [11, 11])
     theta_deg: float = 0.0
     phi_deg: float = 0.0
     output_prefix: str = "desktop_config"
+    backing: BackingSpec = field(default_factory=BackingSpec)
+    solver: SolverSpec = field(default_factory=SolverSpec)
+    tolerances: ToleranceSpec = field(default_factory=ToleranceSpec)
 
     @classmethod
     def from_json(cls, payload: Dict[str, Any]) -> "Configuration":
@@ -168,6 +255,9 @@ class Configuration:
             theta_deg=float(payload.get("angles", {}).get("theta_deg", 0.0)),
             phi_deg=float(payload.get("angles", {}).get("phi_deg", 0.0)),
             output_prefix=str(payload.get("output_prefix", "desktop_config")),
+            backing=BackingSpec.from_json(payload.get("backing", {})),
+            solver=SolverSpec.from_json(payload.get("solver", {})),
+            tolerances=ToleranceSpec.from_json(payload.get("tolerances", {})),
         )
 
     def to_json(self) -> Dict[str, Any]:
@@ -184,6 +274,9 @@ class Configuration:
             "n_harmonics": self.n_harmonics,
             "angles": {"theta_deg": self.theta_deg, "phi_deg": self.phi_deg},
             "output_prefix": self.output_prefix,
+            "backing": self.backing.to_json(),
+            "solver": self.solver.to_json(),
+            "tolerances": self.tolerances.to_json(),
         }
 
 
