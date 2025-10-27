@@ -1,4 +1,9 @@
-from matplotlib import pyplot as plt
+from __future__ import annotations
+
+try:  # pragma: no cover - optional plotting dependency
+    from matplotlib import pyplot as plt  # type: ignore
+except Exception:  # pragma: no cover - plotting is optional
+    plt = None  # type: ignore
 
 
 class Results:
@@ -28,6 +33,9 @@ class Results:
 
         :returns fig, ax: Figure and Axes objects created with matplotlib pyplot interface
         """
+        if plt is None:
+            raise RuntimeError("matplotlib is required to plot results but is not installed.")
+
         if fig is None and ax is None:
             fig, ax = plt.subplots()
         elif fig is not None and ax is None:
@@ -49,4 +57,3 @@ class Results:
             plt.show()
 
         return fig, ax
-

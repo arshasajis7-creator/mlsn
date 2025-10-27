@@ -1,9 +1,11 @@
+from __future__ import annotations
+
+from typing import Union, List, Tuple
+
+from numpy.typing import ArrayLike
+
 from rcwa.shorthand import *
 from rcwa import Material, Crystal, MatrixCalculator
-import matplotlib.pyplot as plt
-from typing import Union, List, Tuple
-from numpy.typing import ArrayLike
-from matplotlib.figure import Figure, Axes
 
 # TODO: Convolution matrix generation must be refactored. It's a hot mess and hard to understand.
 
@@ -247,7 +249,15 @@ class LayerStack:
                 return self.internal_layers[i].crystal
         return None
 
-    def plot(self, fig: Union[None, Figure] = None, ax: Union[None, Axes] = None) -> Tuple[Figure, Axes]:
+    def plot(self, fig: "Figure | None" = None, ax: "Axes | None" = None) -> "Tuple[Figure, Axes]":
+        try:
+            import matplotlib.pyplot as plt  # type: ignore
+            from matplotlib.figure import Figure, Axes  # type: ignore
+        except ImportError as exc:  # pragma: no cover - optional dependency
+            raise RuntimeError(
+                "matplotlib is required to plot layer stacks but is not installed."
+            ) from exc
+
         if fig is None and ax is None:
             fig, ax = plt.subplots()
         elif fig is not None and ax is None:

@@ -3,7 +3,10 @@ from pathlib import Path
 
 from PyQt6.QtWidgets import QApplication
 
-from ui.main_window import MainWindow
+try:  # pragma: no cover - exercised differently when packaged vs script
+    from .ui.main_window import MainWindow
+except ImportError:  # pragma: no cover - fallback for running from source tree
+    from ui.main_window import MainWindow
 
 
 def main() -> None:

@@ -1,35 +1,39 @@
-import pandas as pd
+import csv
 import numpy as np
 import os
 import yaml
 from rcwa.utils import nk_location
 
-def nk_to_complex(data):
+def nk_to_complex(data, column_labels=None):
+    """
+    Convert tabulated n/k measurements into complex refractive index arrays.
 
-    if isinstance(data, np.ndarray):
-        wavelengths = data[:,0]
+    Parameters
+    ----------
+    data:
+        Numeric array whose first column contains wavelengths and the remaining
+        columns hold refractive index (and optionally extinction coefficient).
+    column_labels:
+        Optional list of column headers. If provided and the first header
+        mentions nanometres we convert wavelengths to micrometres to maintain
+        compatibility with the historical pandas-based loader.
+    """
 
-        if data.shape[1] == 3:
-            nk_complex = data[:,1] + 1j*data[:,2]
-        elif data.shape[1] == 2:
-            nk_complex = data[:,1]
-        else:
-            raise ValueError
-    elif isinstance(data, pd.DataFrame):
-        wavelengths = data.iloc[:,0].values
-
-        if '(nm)' in data.columns[0]:
-            wavelengths = wavelengths / 1000
-
-        if data.shape[1] == 3:
-            nk_complex = data.iloc[:,1].values + 1j*data.iloc[:,2].values
-        elif data.shape[1] == 2:
-            nk_complex = data.iloc[:,1].values
-        else:
-            raise ValueError
-
-    else:
+    if not isinstance(data, np.ndarray):
         raise NotImplementedError
+
+    wavelengths = data[:, 0]
+    if column_labels:
+        header = column_labels[0].lower()
+        if "(nm" in header or " nanometer" in header:
+            wavelengths = wavelengths / 1000.0
+
+    if data.shape[1] == 3:
+        nk_complex = data[:, 1] + 1j * data[:, 2]
+    elif data.shape[1] == 2:
+        nk_complex = data[:, 1]
+    else:
+        raise ValueError("Expected two or three columns of nk data")
 
     return wavelengths, nk_complex
 
@@ -38,8 +42,36 @@ class CSVLoader:
         self.filename = filename
 
     def load(self):
-        raw_data = pd.read_csv(self.filename)
-        wavelengths, n_dispersive = nk_to_complex(raw_data)
+        header = None
+        numeric_rows = []
+
+        def is_numeric(row):
+            try:
+                [float(cell) for cell in row]
+            except ValueError:
+                return False
+            return True
+
+        with open(self.filename, newline='', encoding='utf-8-sig') as handle:
+            reader = csv.reader(handle)
+            for raw_row in reader:
+                row = [cell.strip() for cell in raw_row]
+                if not row or all(cell == '' for cell in row):
+                    continue
+                if row[0].startswith('#'):
+                    continue
+                if header is None and not is_numeric(row):
+                    header = row
+                    continue
+                if not is_numeric(row):
+                    continue
+                numeric_rows.append([float(cell) for cell in row])
+
+        if not numeric_rows:
+            raise ValueError(f'No numeric data found in {self.filename}')
+
+        raw_data = np.array(numeric_rows, dtype=np.float64)
+        wavelengths, n_dispersive = nk_to_complex(raw_data, header)
         er_dispersive = np.sqrt(n_dispersive)
         ur_dispersive = np.ones(er_dispersive.shape)
 

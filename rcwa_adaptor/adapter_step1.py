@@ -79,9 +79,13 @@ class LayerSpec:
 
 @dataclass(frozen=True)
 class MaskHole:
+    shape: str
     x_m: float
     y_m: float
-    diameter_m: float
+    size1: float
+    size2: float | None
+    rotation_deg: float
+    adapter_diameter: float
 
 
 @dataclass(frozen=True)
@@ -152,20 +156,73 @@ def _parse_holes(node: Iterable[Mapping], cell_Lx: float, cell_Ly: float) -> Tup
     holes: List[MaskHole] = []
     half_Lx = cell_Lx / 2.0
     half_Ly = cell_Ly / 2.0
+    valid_shapes = {"circle", "square", "rectangle", "ellipse"}
+
     for idx, entry in enumerate(node):
         if not isinstance(entry, Mapping):
             raise ConfigError(f"holes[{idx}] must be an object.")
-        x_m = float(entry.get("x_m", 0.0))
-        y_m = float(entry.get("y_m", 0.0))
-        diameter_m = float(entry.get("diameter_m", 0.0))
-        if diameter_m <= 0:
-            raise ConfigError(f"holes[{idx}].diameter_m must be positive.")
-        radius = diameter_m / 2.0
-        if abs(x_m) + radius > half_Lx + 1e-12:
+
+        shape = str(entry.get("type", entry.get("shape", "circle"))).lower()
+        if shape not in valid_shapes:
+            raise ConfigError(f"holes[{idx}].type '{shape}' is not supported.")
+
+        x_m = float(entry.get("x_m", entry.get("x", 0.0)))
+        y_m = float(entry.get("y_m", entry.get("y", 0.0)))
+        rotation_deg = float(entry.get("rotation_deg", entry.get("rotation", entry.get("theta_deg", 0.0))))
+
+        def clamp_positive(value: float) -> float:
+            val = float(value)
+            if val <= 0.0:
+                raise ConfigError(f"holes[{idx}] must have positive dimensions.")
+            return val
+
+        if shape == "circle":
+            size1 = clamp_positive(entry.get("diameter_m", entry.get("size1", 0.0)))
+            size2 = None
+        elif shape in {"square", "rectangle"}:
+            width = clamp_positive(entry.get("width_m", entry.get("size1", entry.get("diameter_m", 0.0))))
+            height = clamp_positive(entry.get("height_m", entry.get("size2", width)))
+            size1, size2 = width, height
+        elif shape == "ellipse":
+            axis_a = clamp_positive(entry.get("axis_a_m", entry.get("size1", entry.get("diameter_m", 0.0))))
+            axis_b = clamp_positive(entry.get("axis_b_m", entry.get("size2", axis_a)))
+            size1, size2 = axis_a, axis_b
+        else:
+            size1 = clamp_positive(entry.get("diameter_m", entry.get("size1", 0.0)))
+            size2 = None
+
+        if shape == "circle":
+            effective_radius = size1 / 2.0
+        elif shape in {"square", "rectangle"}:
+            # Use the circumscribed circle radius for bounds checking
+            effective_radius = 0.5 * math.hypot(size1, size2 if size2 is not None else size1)
+        elif shape == "ellipse":
+            effective_radius = max(size1, size2 if size2 is not None else size1) / 2.0
+        else:
+            effective_radius = size1 / 2.0
+
+        if abs(x_m) + effective_radius > half_Lx + 1e-12:
             raise ConfigError(f"holes[{idx}] exceeds cell bounds in x-direction.")
-        if abs(y_m) + radius > half_Ly + 1e-12:
+        if abs(y_m) + effective_radius > half_Ly + 1e-12:
             raise ConfigError(f"holes[{idx}] exceeds cell bounds in y-direction.")
-        holes.append(MaskHole(x_m=x_m, y_m=y_m, diameter_m=diameter_m))
+
+        if shape in {"square", "rectangle", "ellipse"}:
+            other = size2 if size2 is not None else size1
+            adapter_diameter = min(size1, other)
+        else:
+            adapter_diameter = size1
+
+        holes.append(
+            MaskHole(
+                shape=shape,
+                x_m=x_m,
+                y_m=y_m,
+                size1=size1,
+                size2=size2,
+                rotation_deg=rotation_deg,
+                adapter_diameter=adapter_diameter,
+            )
+        )
     return tuple(holes)
 
 
@@ -481,8 +538,35 @@ class MaskPattern:
         )
 
         for hole in self.holes:
-            radius_sq = (hole.diameter_m / 2.0) ** 2
-            mask = (self._X - hole.x_m) ** 2 + (self._Y - hole.y_m) ** 2 <= radius_sq
+            x_rel = self._X - hole.x_m
+            y_rel = self._Y - hole.y_m
+            theta = math.radians(getattr(hole, "rotation_deg", 0.0) or 0.0)
+            if theta:
+                cos_t = math.cos(theta)
+                sin_t = math.sin(theta)
+                x_local = x_rel * cos_t + y_rel * sin_t
+                y_local = -x_rel * sin_t + y_rel * cos_t
+            else:
+                x_local = x_rel
+                y_local = y_rel
+
+            shape = hole.shape
+            if shape == "circle":
+                radius = hole.size1 / 2.0
+                mask = (x_local ** 2 + y_local ** 2) <= (radius ** 2)
+            elif shape in {"square", "rectangle"}:
+                half_w = hole.size1 / 2.0
+                half_h = (hole.size2 if hole.size2 is not None else hole.size1) / 2.0
+                mask = (np.abs(x_local) <= half_w) & (np.abs(y_local) <= half_h)
+            elif shape == "ellipse":
+                axis_a = hole.size1 / 2.0
+                axis_b = (hole.size2 if hole.size2 is not None else hole.size1) / 2.0
+                mask = (x_local / axis_a) ** 2 + (y_local / axis_b) ** 2 <= 1.0
+            else:
+                # Fallback: treat unknown shapes as circle with adapter diameter
+                radius = hole.adapter_diameter / 2.0
+                mask = (x_local ** 2 + y_local ** 2) <= (radius ** 2)
+
             er_cell[mask, 0] = er_hole
             ur_cell[mask, 0] = ur_hole
 

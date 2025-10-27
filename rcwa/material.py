@@ -3,7 +3,6 @@ I think the way this currently works is too convoluted. It needs to be refactore
 
 """
 import numpy as np
-import pandas as pd
 import rcwa
 import os
 from rcwa.utils import CSVLoader, RIDatabaseLoader
